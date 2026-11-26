@@ -38,6 +38,9 @@ from collections import OrderedDict
 _SERVE_DIR = str(Path(__file__).resolve().parent)
 if _SERVE_DIR not in sys.path:
     sys.path.insert(0, _SERVE_DIR)
+# Skill roots are computed at import time; point the library at the project
+# root so its .opencode/skills/ is found even when cwd is serve/.
+os.environ.setdefault("BHAIJANLAL_HOME", str(Path(_SERVE_DIR).parent))
 try:
     import skills as _skills
 except Exception as _exc:  # noqa: BLE001 - never break the endpoint over skills
@@ -441,7 +444,15 @@ _STYLE = ("Bhajanlal answers in exactly the shape the user asks for and nothing 
           "one line per list item, the bare value for short questions. When the "
           "user gives no format, Bhajanlal keeps it short and adds runnable code "
           "only when it helps. Responses stay minimal; instructions are never "
-          "quoted back.\n")
+          "quoted back.\n"
+          "Bhajanlal first parses the user's true intent, constraints, and "
+          "desired output format before acting, asks one targeted clarifying "
+          "question only when two interpretations would change the architecture, "
+          "and reasons step-by-step internally (chain of thought) before "
+          "producing the final answer. It never guesses file paths, APIs, or "
+          "flags; it verifies against the actual codebase and tool output. "
+          "When uncertain, it states assumptions explicitly and chooses the "
+          "simplest correct solution.\n")
 
 # ---------------------------------------------------------------- local model
 _LOCAL = {"model": None, "tokenizer": None, "lock": threading.Lock(), "loading": False,
@@ -1669,6 +1680,21 @@ class Handler(BaseHTTPRequestHandler):
                 "max_tokens": MAX_TOKENS,
             }
             self._json(200, body)
+        elif path.startswith("/v1/train/status"):
+            status = {}
+            p = BHAIJANLAL_ROOT / "selflearn" / "auto_train_status.json"
+            try:
+                status = json.loads(p.read_text())
+            except (OSError, json.JSONDecodeError):
+                status = {"status": "no run yet"}
+            logp = BHAIJANLAL_ROOT / "selflearn" / "auto_train.log"
+            tail = ""
+            try:
+                lines = logp.read_text().splitlines()
+                tail = "\n".join(lines[-20:])
+            except OSError:
+                pass
+            self._json(200, {"status": status, "log_tail": tail})
         elif path.startswith("/v1/feedback"):
             count = 0
             try:
@@ -1842,12 +1868,44 @@ class Handler(BaseHTTPRequestHandler):
             count = -1
         self._json(200, {"status": "recorded", "harvested": count})
 
+    def _handle_train_run(self) -> None:
+        '''Trigger the auto-train loop (train/auto_train.py) in the background.'''
+        try:
+            length = int(self.headers.get("Content-Length") or 0)
+            body = json.loads(self.rfile.read(length) or b"{}")
+        except (ValueError, json.JSONDecodeError):
+            body = {}
+        if not isinstance(body, dict):
+            self._json(400, {"error": {"message": "body must be an object"}})
+            return
+        dry = bool(body.get("dry_run", False))
+        stage = body.get("stage")
+        import subprocess, sys as _sys
+        cmd = [_sys.executable, str(BHAIJANLAL_ROOT / "train" / "auto_train.py")]
+        if dry:
+            cmd.append("--dry-run")
+        if stage:
+            cmd += ["--stage", str(stage)]
+        try:
+            BHAIJANLAL_ROOT.joinpath("selflearn").mkdir(parents=True, exist_ok=True)
+            subprocess.Popen(cmd, cwd=str(BHAIJANLAL_ROOT),
+                             stdout=open(BHAIJANLAL_ROOT / "selflearn" / "auto_train_proc.log", "a"),
+                             stderr=subprocess.STDOUT)
+        except OSError as exc:
+            self._json(500, {"error": {"message": f"failed to spawn auto_train: {exc}"}})
+            return
+        self._json(202, {"status": "started", "dry_run": dry, "stage": stage,
+                         "log": str(BHAIJANLAL_ROOT / "selflearn" / "auto_train.log")})
+
     def do_POST(self):
         if not self._host_ok() or not self._origin_ok():
             self._json(403, {"error": {"message": "forbidden origin/host"}})
             return
         if self.path.startswith("/v1/feedback"):
             self._handle_feedback()
+            return
+        if self.path.startswith("/v1/train/run"):
+            self._handle_train_run()
             return
         if self.path.startswith("/v1/agent/run"):
             self._proxy_agent_run()
@@ -1905,8 +1963,11 @@ class Handler(BaseHTTPRequestHandler):
                 })
                 return
 
-        # Concurrency gate
-        acquired = _SEM.acquire(timeout=5)
+        # Concurrency gate. Locally-pinned models skip it: they run in-process
+        # and must never be rejected because upstream calls hold the semaphore
+        # (that starvation is what produced "assistant is briefly unavailable").
+        local_pin = model in ("bhajanlal", "bhajanlal/local", "bhajanlal/pro-max-local")
+        acquired = True if local_pin else _SEM.acquire(timeout=5)
         if not acquired:
             self._json(503, {"error": {"message": "endpoint busy, retry shortly"}})
             self.send_header("Retry-After", "5") if False else None
@@ -1917,7 +1978,8 @@ class Handler(BaseHTTPRequestHandler):
             try:
                 self._stream_chat(model, prompt, messages, cid, created)
             finally:
-                _SEM.release()
+                if not local_pin:
+                    _SEM.release()
             return
 
         # Per-prompt coalescing: concurrent identical requests share one upstream call.
@@ -1973,7 +2035,8 @@ class Handler(BaseHTTPRequestHandler):
                 self._json(code, {"error": {"message": msg.replace("FREE_LIMIT: ", "")}})
             return
         finally:
-            _SEM.release()
+            if not local_pin:
+                _SEM.release()
             with _INFLIGHT_LOCK:
                 _INFLIGHT.pop(key, None)
 
@@ -2010,9 +2073,8 @@ def main() -> None:
     # Warm the model list so the first request doesn't pay an `opencode models`
     # subprocess spawn (up to 30s timeout).
     threading.Thread(target=list_models, daemon=True).start()
+    ThreadingHTTPServer.allow_reuse_address = True
     server = ThreadingHTTPServer((HOST, PORT), Handler)
-    # allow quick restart
-    server.allow_reuse_address = True
     print(f"[endpoint] Bhajanlal OpenAI-compatible endpoint on http://{HOST}:{PORT}",
           flush=True)
     print(f"[endpoint] fd soft limit raised; max concurrent={MAX_CONCURRENT}",

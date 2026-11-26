@@ -25,10 +25,10 @@
     "hour_of_week": "mon 04:00"
   },
   "retraining_mix": {
-    "coding_verification": 0.35,
+    "coding_verification": 0.30,
     "agentic_tool_use_recovery": 0.25,
-    "fast_compressed_reasoning": 0.2,
-    "multimodal_generation_visual": 0.2,
+    "fast_compressed_reasoning": 0.30,
+    "multimodal_generation_visual": 0.15,
     "dataset": "train/data_mix.jsonl",
     "generator": "train/gen_mix.py",
     "trainer": "train/train_v18.py"

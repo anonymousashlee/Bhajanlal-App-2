@@ -19,10 +19,10 @@ TRAIN = Path(__file__).resolve().parent
 random.seed(2502)  # deterministic mix
 
 TARGET = {
-    "coding": 0.35,
+    "coding": 0.30,
     "agentic": 0.25,
-    "reasoning": 0.20,
-    "multimodal": 0.20,
+    "reasoning": 0.30,
+    "multimodal": 0.15,
 }
 
 KW = {
@@ -104,8 +104,8 @@ def main():
         "counts": stats,
         "total": len(out),
         "source_rows": total,
-        "note": "4-quadrant balanced retraining mix (coding 35 / agentic 25 / "
-                "reasoning 20 / multimodal 20)",
+        "note": "4-quadrant balanced retraining mix (coding 30 / agentic 25 / "
+                "reasoning 30 / multimodal 15)",
     }
     (TRAIN / "metadata_mix.json").write_text(json.dumps(meta, indent=2))
     print(json.dumps(meta, indent=2))

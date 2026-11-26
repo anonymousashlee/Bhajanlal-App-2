@@ -8,6 +8,9 @@
   ],
   "cadence": "weekly",
   "armed": true,
+  "auto_train": true,
+  "auto_train_entrypoint": "train/auto_train.py",
+  "auto_train_trigger": "weekly (Mon 04:00) or POST /v1/train/run",
   "dry_run_passed": true,
   "safety_gates": [
     "golden suite",

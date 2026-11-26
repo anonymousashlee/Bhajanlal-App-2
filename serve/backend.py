@@ -86,6 +86,9 @@ from aiohttp import web
 _SERVE_DIR = str(Path(__file__).resolve().parent)
 if _SERVE_DIR not in sys.path:
     sys.path.insert(0, _SERVE_DIR)
+# Skill roots are computed at import time; point the library at the project
+# root so its .opencode/skills/ is found even when cwd is serve/.
+os.environ.setdefault("BHAIJANLAL_HOME", str(Path(_SERVE_DIR).parent))
 try:
     import skills as _skills_mod
 except Exception as _exc:  # noqa: BLE001 - library must never break the gateway
@@ -174,6 +177,8 @@ class Settings:
     agent_shell: bool = True
     shell_timeout: float = 120.0
     fallback_free: bool = True
+    prefer_local: bool = False
+    disable_free_upstream: bool = False
     opencode_default: str = "opencode/mimo-v2.6-flash-free"
     opencode_free_models: List[str] = field(default_factory=lambda: list(FREE_MODELS))
     opencode_cwd: str = ""
@@ -223,6 +228,8 @@ def load_settings() -> Settings:
         agent_shell=_env_bool("BHAJANLAL_AGENT_SHELL", True),
         shell_timeout=_env_float("BHAJANLAL_AGENT_SHELL_TIMEOUT", 120.0),
         fallback_free=_env_bool("BHAJANLAL_FALLBACK_FREE", True),
+        prefer_local=_env_bool("BHAJANLAL_PREFER_LOCAL", False),
+        disable_free_upstream=_env_bool("BHAJANLAL_DISABLE_FREE_UPSTREAM", False),
         opencode_default=_env_str("BHAJANLAL_OPENCODE_MODEL", "opencode/beam-free"),
         opencode_free_models=[
             m.strip() for m in _env_str(
@@ -464,10 +471,13 @@ def resolve_routes(
         for provider, which in ALIAS_SPECS["bhajanlal"]:
             add(provider, which)
 
-    if kind == "chat" and s.fallback_free:
+    if kind == "chat" and s.fallback_free and not s.disable_free_upstream and not _free_limit_active():
         for model in [s.opencode_default] + s.opencode_free_models:
             if model and all((r.provider, r.model) != ("opencode", model) for r in routes):
                 routes.append(Route("opencode", model, "chat"))
+    # Prefer local: put local route first when requested or when free tier exhausted.
+    if (s.prefer_local or _free_limit_active() or s.disable_free_upstream) and kind == "chat":
+        routes.insert(0, Route("local", "bhajanlal/local", "chat"))
     return routes, kind
 
 
@@ -544,15 +554,27 @@ def error_response(status: int, message: str, **extra: Any) -> web.Response:
     return web.json_response(body, status=status)
 
 
+def _local_was_busy(attempts: List[dict]) -> bool:
+    """True when the local fallback already failed with a transient error
+    (endpoint busy / timeout) - worth one more attempt before giving up."""
+    for a in attempts or []:
+        if a.get("provider") == "local" and not a.get("ok"):
+            err = str(a.get("error") or "").lower()
+            if any(x in err for x in ("503", "busy", "timeout", "timed out")):
+                return True
+    return False
+
+
 def all_failed_message(exc: "AllProvidersFailed") -> str:
     """Short, actionable client-facing message for a total provider failure."""
     blob = " ".join(str(a.get("error") or "") for a in (exc.attempts or [])).lower()
     if ("free_limit" in blob or "free usage limit" in blob
             or "rate limit" in blob or "429" in blob or "quota" in blob):
         return (
-            "all models are rate-limited right now (free tier exhausted). "
-            "Add BHAJANLAL_MIMO_API_KEY and/or BHAJANLAL_MINIMAX_API_KEY to route "
-            "to paid MiMo/MiniMax models, then retry."
+            "free upstream tier exhausted; switched to local model. To avoid "
+            "this permanently, set BHAJANLAL_DISABLE_FREE_UPSTREAM=1 and/or "
+            "BHAJANLAL_PREFER_LOCAL=1, or connect a paid provider via "
+            "BHAJANLAL_MIMO_API_KEY / BHAJANLAL_MINIMAX_API_KEY."
         )
     return "all providers failed (%d attempts); see attempts for details" % len(exc.attempts or [])
 
@@ -730,7 +752,7 @@ def _skill_mode() -> str:
     """BHAJANLAL_SKILLS = full | applied | off (default: applied)."""
     if _skills_mod is None:
         return "off"
-    return _skills_mod.skill_mode("off")
+    return _skills_mod.skill_mode("applied")
 
 
 def _skill_block(user_text: str) -> str:
@@ -975,7 +997,9 @@ def _free_limit_active() -> bool:
 def _set_free_limit(text: str) -> None:
     global _FREE_LIMIT_UNTIL, _FREE_LIMIT_MSG
     m = re.search(r'retryAfterMs["\']?\s*[:=]\s*(\d+)', text or "")
-    wait_ms = int(m.group(1)) if m else 60000
+    # Default to 1 hour (not 60s) so we stop hammering an exhausted free tier.
+    wait_ms = int(m.group(1)) if m else 3600000
+    wait_ms = max(wait_ms, 300000)  # never retry sooner than 5 minutes
     _FREE_LIMIT_UNTIL = time.time() + (wait_ms / 1000.0)
     _FREE_LIMIT_MSG = "free upstream limit: retry after %ds" % (wait_ms // 1000)
 
@@ -1081,6 +1105,9 @@ def _opencode_error(stderr: str, stdout: str, returncode: int = None) -> Upstrea
     suffix = (" (exit %d)" % returncode) if (returncode is not None and not text) else ""
     low = text.lower()
     if any(x in low for x in ("rate limit", "429", "quota", "limit reached", "usage limit")):
+        # Remember the limit so the next request skips the dead upstream and
+        # goes straight to the local model instead of re-paying for a 429.
+        _set_free_limit(text or suffix)
         return UpstreamError(429, "free upstream limit: " + (text[-400:] or suffix), "opencode", False)
     if any(x in low for x in ("not found", "unknown model", "invalid model")):
         return UpstreamError(400, "model error: " + (text[-400:] or suffix), "opencode", False)
@@ -1106,9 +1133,13 @@ async def _local_complete(s: "Settings", prompt: str) -> dict:
                "stream": False, "max_tokens": 1024}
     data = None
     last_exc = None
+    # The 0.5B checkpoint decodes at ~16 tok/s and prefill is slower still, so
+    # 45s was too tight: it produced the "local fallback could not answer"
+    # ReadTimeout right when the free tier was rate-limited.
+    local_timeout = min(s.run_timeout, 150.0)
     for _try in range(2):
         try:
-            async with httpx.AsyncClient(timeout=httpx.Timeout(min(s.run_timeout, 45.0), connect=10.0)) as client:
+            async with httpx.AsyncClient(timeout=httpx.Timeout(local_timeout, connect=10.0)) as client:
                 r = await client.post(url, json=payload)
                 r.raise_for_status()
                 data = r.json()
@@ -1140,7 +1171,7 @@ async def _local_stream(s: "Settings", prompt: str):
     payload = {"model": "bhajanlal/local", "messages": [{"role": "user", "content": prompt}],
                "stream": True, "max_tokens": 1024}
     try:
-        async with httpx.AsyncClient(timeout=httpx.Timeout(min(s.run_timeout, 45.0), connect=10.0)) as client:
+        async with httpx.AsyncClient(timeout=httpx.Timeout(min(s.run_timeout, 150.0), connect=10.0)) as client:
             async with client.stream("POST", url, json=payload) as resp:
                 resp.raise_for_status()
                 async for raw in resp.aiter_lines():
@@ -1568,7 +1599,7 @@ async def complete_with_fallback(
                             result = await asyncio.wait_for(
                                 _local_complete(s, prompt), timeout=s.run_timeout)
                         else:
-                            raise AllProvidersFailed(attempts, last if last is not None else UpstreamError(429, _FREE_LIMIT_MSG, "opencode", False))
+                            break  # -> last-ditch local attempt at the bottom
                     else:
                         result = await asyncio.wait_for(
                             opencode_complete(s, route.model, prompt), timeout=s.run_timeout)
@@ -1596,7 +1627,12 @@ async def complete_with_fallback(
                     await asyncio.sleep(0.5)
                     continue
                 break
-            except UpstreamError as exc:
+            except Exception as exc:  # noqa: BLE001 - one bad route must not kill the request
+                if not isinstance(exc, UpstreamError):
+                    # Unexpected failure (missing binary, bad JSON, ...): fold
+                    # it into the fallback path instead of a 502 to the client.
+                    exc = UpstreamError(502, "%s failed: %s" % (route.provider, repr(exc)[:200]),
+                                        route.provider, True)
                 elapsed = round((time.perf_counter() - started) * 1000, 1)
                 last = exc
                 attempts.append({"provider": route.provider, "model": route.model,
@@ -1604,8 +1640,10 @@ async def complete_with_fallback(
                                  "error": exc.message[:300], "ms": elapsed})
                 metric("provider_%s_error" % route.provider)
                 metric("fallbacks")
-                if (not tried_local and route.provider == "opencode"
-                        and (_free_limit_active() or _no_route_active())):
+                if not tried_local and route.provider == "opencode":
+                    # Any opencode failure (rate limit, no-route, crash, empty
+                    # output) falls through to the local checkpoint - the flag
+                    # check used to miss plain "rate limit"/"429" texts.
                     tried_local = True
                     try:
                         result = await asyncio.wait_for(_local_complete(s, prompt), timeout=s.run_timeout)
@@ -1625,6 +1663,27 @@ async def complete_with_fallback(
                     continue
                 break
         continue
+
+    # Last resort: answer from the local checkpoint instead of telling the
+    # user the assistant is unavailable. Runs when no route ever reached it
+    # (paid/non-opencode failures) or when its previous try was a transient
+    # busy/timeout from the endpoint.
+    if not tried_local or _local_was_busy(attempts):
+        prompt = build_prompt(body.get("messages"), body.get("tools"))
+        try:
+            result = await asyncio.wait_for(
+                _local_complete(s, prompt), timeout=min(s.run_timeout, 90.0))
+        except Exception as lexc:
+            attempts.append({"provider": "local", "model": "bhajanlal/local", "ok": False,
+                             "status": 502, "error": repr(lexc)[:300], "ms": 0})
+            log_event(event="local_fallback_failed", error=repr(lexc)[:300])
+        else:
+            attempts.append({"provider": "local", "model": "bhajanlal/local", "ok": True, "ms": 0})
+            metric("provider_local_ok")
+            result["_route"] = Route("local", "bhajanlal/local", "chat")
+            result["_attempts"] = attempts
+            result["_latency_ms"] = 0
+            return result
     raise AllProvidersFailed(attempts, last)
 
 
@@ -1863,7 +1922,7 @@ async def ensemble_complete(
         {
             "role": "system",
             "content": (
-                "You are Bhajanlal Omni Judge, an impartial expert evaluator. "
+                "You are Bhajanlal Pro Max 2.5 Free Judge, an impartial expert evaluator. "
                 "Score each candidate 1-10 on accuracy, helpfulness, completeness, clarity, and correctness. "
                 "Pick the single best candidate index. "
                 + synth_instruction +
@@ -2038,17 +2097,25 @@ async def stream_with_fallback(
                         tried_local = True
                         gen = _local_stream(s, prompt)
                     else:
-                        raise AllProvidersFailed(attempts, last if last is not None else UpstreamError(429, _FREE_LIMIT_MSG, "opencode", False))
+                        break  # -> last-ditch local attempt at the bottom
                 else:
                     gen = opencode_stream(s, route.model, prompt)
             else:
                 gen = upstream_stream(client, s, route, body)
 
-            first = await gen.__anext__()
-        except StopAsyncIteration:
-            attempts.append({"provider": route.provider, "model": route.model, "ok": False, "status": 502})
-            continue
-        except UpstreamError as exc:
+            try:
+                first = await gen.__anext__()
+            except StopAsyncIteration:
+                # Zero tokens from the upstream: treat it as a provider
+                # failure so the local fallback below still gets its chance.
+                raise UpstreamError(502, "%s returned no output" % route.provider,
+                                    route.provider, True)
+        except Exception as exc:  # noqa: BLE001 - one bad route must not kill the request
+            if not isinstance(exc, UpstreamError):
+                # Unexpected failure (missing binary, bad JSON, ...): fold it
+                # into the fallback path instead of a 502 to the client.
+                exc = UpstreamError(502, "%s failed: %s" % (route.provider, repr(exc)[:200]),
+                                    route.provider, True)
             last = exc
             attempts.append({
                 "provider": route.provider, "model": route.model,
@@ -2058,9 +2125,11 @@ async def stream_with_fallback(
             metric("fallbacks")
             log_event(event="stream_provider_error", provider=route.provider,
                       model=route.model, status=exc.status, error=exc.message[:300])
-            # If this was a free-limit/no-route failure, try local once.
-            if (not tried_local and route.provider == "opencode"
-                    and (_free_limit_active() or _no_route_active())):
+            # Any opencode failure (rate limit, no-route, crash, no output)
+            # falls through to the local checkpoint once. The old flag check
+            # missed plain "rate limit"/"429" texts, which is how users ended
+            # up seeing "the local fallback could not answer".
+            if not tried_local and route.provider == "opencode":
                 tried_local = True
                 try:
                     lgen = _local_stream(s, build_prompt(body.get("messages"), body.get("tools")))
@@ -2096,6 +2165,31 @@ async def stream_with_fallback(
             except Exception:
                 pass
         return
+
+    # Last resort: stream from the local checkpoint instead of telling the
+    # user the assistant is unavailable. Mirrors complete_with_fallback.
+    if not tried_local or _local_was_busy(attempts):
+        prompt = build_prompt(body.get("messages"), body.get("tools"))
+        try:
+            lgen = _local_stream(s, prompt)
+            lfirst = await lgen.__anext__()
+            attempts.append({"provider": "local", "model": "bhajanlal/local", "ok": True, "ms": 0})
+            metric("provider_local_ok")
+            yield ("_route", Route("local", "bhajanlal/local", "chat"))
+            yield lfirst
+            async for event in lgen:
+                yield event
+            try:
+                await lgen.aclose()
+            except Exception:
+                pass
+            return
+        except Exception as lexc:
+            last = UpstreamError(502, "local model unavailable: " + repr(lexc)[:300], "local", True)
+            attempts.append({"provider": "local", "model": "bhajanlal/local", "ok": False,
+                             "status": 502, "error": str(lexc)[:300]})
+            log_event(event="stream_provider_error", provider="local", model="bhajanlal/local",
+                      status=502, error=str(lexc)[:300])
 
     raise AllProvidersFailed(attempts, last)
 
@@ -3623,6 +3717,52 @@ async def handle_health(request: web.Request) -> web.Response:
     })
 
 
+async def handle_train_status(request: web.Request) -> web.Response:
+    if not _auth_ok(request):
+        return error_response(401, "invalid API key")
+    root = Path(__file__).resolve().parent.parent
+    status = {}
+    p = root / "selflearn" / "auto_train_status.json"
+    try:
+        status = json.loads(p.read_text())
+    except (OSError, json.JSONDecodeError):
+        status = {"status": "no run yet"}
+    tail = ""
+    logp = root / "selflearn" / "auto_train.log"
+    try:
+        tail = "\n".join(logp.read_text().splitlines()[-20:])
+    except OSError:
+        pass
+    return web.json_response({"status": status, "log_tail": tail})
+
+
+async def handle_train_run(request: web.Request) -> web.Response:
+    if not _auth_ok(request):
+        return error_response(401, "invalid API key")
+    root = Path(__file__).resolve().parent.parent
+    try:
+        body = await request.json()
+    except Exception:
+        body = {}
+    if not isinstance(body, dict):
+        body = {}
+    dry = bool(body.get("dry_run", False))
+    stage = body.get("stage")
+    cmd = [sys.executable, str(root / "train" / "auto_train.py")]
+    if dry:
+        cmd.append("--dry-run")
+    if stage:
+        cmd += ["--stage", str(stage)]
+    try:
+        (root / "selflearn").mkdir(parents=True, exist_ok=True)
+        logf = open(root / "selflearn" / "auto_train_proc.log", "a")
+        subprocess.Popen(cmd, cwd=str(root), stdout=logf, stderr=subprocess.STDOUT)
+    except OSError as exc:
+        return error_response(500, f"failed to spawn auto_train: {exc}")
+    return web.json_response({"status": "started", "dry_run": dry, "stage": stage,
+                             "log": str(root / "selflearn" / "auto_train.log")}, status=202)
+
+
 async def handle_metrics(request: web.Request) -> web.Response:
     if not _auth_ok(request):
         return error_response(401, "invalid API key")
@@ -3753,6 +3893,8 @@ def create_app(settings: Optional[Settings] = None) -> web.Application:
     app.router.add_get("/healthz", handle_health)
     app.router.add_get("/v1/models", handle_models)
     app.router.add_get("/v1/skills", handle_skills)
+    app.router.add_get("/v1/train/status", handle_train_status)
+    app.router.add_post("/v1/train/run", handle_train_run)
     app.router.add_get("/v1/config", handle_config)
     app.router.add_get("/metrics", handle_metrics)
     app.router.add_post("/v1/chat/completions", handle_chat)

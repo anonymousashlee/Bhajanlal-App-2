@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Bhajanlal Omni — Greatest AI</title>
+<title>Bhajanlal Pro Max 2.5 Free</title>
 <style>
   :root {
     --bg: #0b0d12;
@@ -227,6 +227,14 @@
   .typing span { width: 7px; height: 7px; border-radius: 50%; background: var(--accent); animation: blink 1.2s infinite; }
   .typing span:nth-child(2) { animation-delay: .2s; }
   .typing span:nth-child(3) { animation-delay: .4s; }
+
+  /* ---- slow typing animation for shell commands / code while streaming ---- */
+  @keyframes bhajanBlink { 0%, 50% { opacity: 1; } 51%, 100% { opacity: 0; } }
+  @keyframes bhajanTypeIn { from { opacity: 0; transform: translateY(2px); } to { opacity: 1; transform: none; } }
+  .typing-caret { display: inline-block; width: 2px; height: 1.05em; background: var(--accent); margin-left: 3px; vertical-align: text-bottom; animation: bhajanBlink 1s steps(2) infinite; }
+  .bubble.streaming pre, .bubble.streaming .shell-cmd { animation: bhajanTypeIn .18s ease; }
+  .bubble.streaming code { position: relative; }
+  .think-line.cmd.typing { color: #79c0ff; }
   @keyframes blink { 0%, 60%, 100% { opacity: .3; transform: scale(.85); } 30% { opacity: 1; transform: scale(1); } }
 
   /* ---------- Thinking indicator ---------- */
@@ -348,7 +356,7 @@
     <div class="topbar">
       <button class="icon-btn menu-btn" id="menuBtn" aria-label="Open menu">☰</button>
       <div>
-        <div class="topbar-title" id="topTitle">Bhajanlal Omni</div>
+        <div class="topbar-title" id="topTitle">Bhajanlal Pro Max 2.5 Free</div>
         <div class="topbar-sub" id="topSub">All models compiled · free local runtime</div>
       </div>
       <div style="flex:1"></div>
@@ -600,7 +608,7 @@
         { id: "bhajanlal/minimax", re: /(^|\/)minimax$/i,
           label: "Bhajanlal MiniMax" },
         { id: "bhajanlal/omni", re: /(^|\/)omni$/i,
-          label: "Bhajanlal Omni" },
+          label: "Bhajanlal Pro Max 2.5 Free" },
       ];
       let items = [];
       for (const w of WANT) {
@@ -630,7 +638,7 @@
   function updateTopTitle() {
     const v = els.model.value;
     const isOmni = /omni|greatest|ultimate|ensemble|best|pro-max|promax|bhajanlal\/bhajanlal|^bhajanlal$/.test(v);
-    els.topTitle.textContent = isOmni ? "Bhajanlal Omni" : "Bhajanlal";
+    els.topTitle.textContent = isOmni ? "Bhajanlal Pro Max 2.5 Free" : "Bhajanlal";
     els.topSub.textContent = isOmni ? "All models compiled · free local runtime" : "Fast single-model route";
   }
 
@@ -683,15 +691,33 @@
     startSimFeed(node);
   }
   // Live feed line while thinking: shell commands / tool activity.
+  // Types the text out slowly (typewriter) instead of painting it instantly.
   function pushThink(node, text, cls) {
     if (cls !== "sim") stopSimFeed();  // real activity takes over
     const feed = node?.bubble?.querySelector?.(".think-feed");
     if (!feed) return;
     const line = document.createElement("div");
-    line.className = "think-line" + (cls ? " " + cls : "");
-    line.textContent = text;
+    line.className = "think-line" + (cls ? " " + cls : "") + " typing";
+    line.textContent = "";
     feed.appendChild(line);
     scrollBottom();
+    let k = 0;
+    const step = () => {
+      if (!document.body.contains(line)) return;
+      if (k < text.length) {
+        line.textContent = text.slice(0, ++k);
+        // trailing caret
+        line.textContent = text.slice(0, k) + "▌";
+        scrollBottom();
+        const ch = text[k - 1] || "";
+        const delay = ch === "\n" ? 80 : (/[{}();]/.test(ch) ? 35 : (18 + Math.random() * 22));
+        setTimeout(step, delay);
+      } else {
+        line.textContent = text;
+        line.classList.remove("typing");
+      }
+    };
+    step();
   }
   function answerEl(node) {
     return node?.bubble?.querySelector?.(".answer") || node?.bubble || null;
@@ -821,6 +847,7 @@
       if (agentMode) {
         if (!node) node = addMessage("assistant", { content: "" });
         sendNode = node;
+        if (node?.bubble) node.bubble.classList.add("streaming");
         showThinking(node);
         if (isOmni) notice("★ Omni: running the tool loop, then compiling…", 10000);
         const r = await fetch(API("/v1/agent/run"), {
@@ -877,11 +904,13 @@
           host.insertAdjacentHTML("beforeend", `<div class="meta-line">Thought · ${secs}s</div>`);
         };
         if (ans0) paint(ans0); else paint(node.bubble);
+        if (node?.bubble) setTimeout(() => node.bubble.classList.remove("streaming"), 400);
         messages.push({ role: "assistant", content: j.final || "" });
         save(); scrollBottom();
       } else {
         if (!node) node = addMessage("assistant", { content: "" });
         sendNode = node;
+        node.bubble.classList.add("streaming");
         showThinking(node);
         const r = await fetch(API("/v1/chat/completions"), {
           method: "POST",
@@ -916,14 +945,20 @@
                 clearThinking(node);
                 buf += d.content;
                 const ans = answerEl(node);
-                if (ans) ans.innerHTML = md(buf); else node.bubble.innerHTML = md(buf);
+                const html = md(buf) + '<span class="typing-caret"></span>';
+                if (ans) ans.innerHTML = html; else node.bubble.innerHTML = html;
                 scrollBottom();
               }
             }
           }
         }
         clearThinking(node);
+        if (node?.bubble) node.bubble.classList.remove("streaming");
         const ans0 = answerEl(node);
+        // Final paint without the streaming caret.
+        if (buf) {
+          if (ans0) ans0.innerHTML = md(buf); else if (node?.bubble) node.bubble.innerHTML = md(buf);
+        }
         if (!buf && rbuf) {
           const det = document.createElement("details"); det.className = "reasoning";
           det.innerHTML = `<summary>Reasoning</summary><div class="reasoning-body">${esc(rbuf)}</div>`;
@@ -944,6 +979,7 @@
         if (buf) messages.push({ role: "assistant", content: buf });
         if (node) {
           clearThinking(node);
+          if (node.bubble) node.bubble.classList.remove("streaming");
           const a = answerEl(node);
           const html = md(buf || "(stopped)");
           if (a) a.innerHTML = html; else node.bubble.innerHTML = html;
