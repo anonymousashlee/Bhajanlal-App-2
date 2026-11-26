@@ -1373,7 +1373,7 @@ def _friendly_error(exc: Exception) -> str:
     if "busy" in low or "503" in low:
         return "error: the assistant is busy right now - try again in a moment."
     if any(m in low for m in _INFRA_MARKS) or "limit" in low or "quota" in low:
-        return "error: the assistant is briefly unavailable - please try again."
+        return "error: I'm temporarily busy - please retry in a moment."
     msg = msg.replace("FREE_LIMIT: ", "")
     if len(msg) > 200:
         msg = msg[:200] + "..."

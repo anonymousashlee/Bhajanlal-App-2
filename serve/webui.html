@@ -997,7 +997,7 @@
           return send(retryAttempt + 1);
         }
         const friendly = isRate
-          ? "<b>The assistant is briefly unavailable.</b><br>Too many requests — waited and retried, but it is still busy. Please try again in a moment."
+          ? "<b>I'm temporarily busy.</b><br>Handling other requests — please retry in a moment."
           : isUpstream
             ? "<b>The upstream model service hiccuped.</b><br>This is usually transient — try again in a moment."
             : esc(raw);

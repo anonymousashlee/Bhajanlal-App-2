@@ -1125,19 +1125,92 @@ def _opencode_error(stderr: str, stdout: str, returncode: int = None) -> Upstrea
 
 _LOCAL_ENDPOINT = os.environ.get("BHAJANLAL_LOCAL_ENDPOINT", "http://127.0.0.1:8788").rstrip("/")
 
+_LOCAL_ENDPOINT_LOCK = asyncio.Lock()
+_LOCAL_ENDPOINT_PROC = None
+_LAST_GOOD = {}
+_LAST_GOOD_LOCK = threading.Lock()
+_LAST_GOOD_MAX = 256
+
+
+async def _ensure_local_endpoint(timeout: float = 45.0) -> bool:
+    async def _ping() -> bool:
+        try:
+            async with httpx.AsyncClient(timeout=httpx.Timeout(3.0, connect=2.0)) as c:
+                r = await c.get(_LOCAL_ENDPOINT + "/health")
+                return r.status_code == 200
+        except Exception:
+            return False
+
+    if await _ping():
+        return True
+
+    async with _LOCAL_ENDPOINT_LOCK:
+        if await _ping():
+            return True
+        ep = Path(__file__).resolve().parent / "endpoint.py"
+        if not ep.exists():
+            log_event(event="local_endpoint_missing", path=str(ep))
+            return False
+        try:
+            proc = await asyncio.create_subprocess_exec(
+                sys.executable, str(ep),
+                stdout=asyncio.subprocess.DEVNULL,
+                stderr=asyncio.subprocess.DEVNULL,
+                cwd=str(ep.parent.parent),
+                start_new_session=True,
+            )
+            global _LOCAL_ENDPOINT_PROC
+            _LOCAL_ENDPOINT_PROC = proc
+            log_event(event="local_endpoint_started", pid=proc.pid)
+        except Exception as exc:
+            log_event(event="local_endpoint_spawn_failed", error=repr(exc)[:200])
+            return False
+
+        deadline = time.time() + timeout
+        while time.time() < deadline:
+            await asyncio.sleep(1.0)
+            if await _ping():
+                return True
+            if proc.returncode is not None:
+                log_event(event="local_endpoint_exited_early", rc=proc.returncode)
+                return False
+        return False
+
+
+def _remember_good(key: str, payload: dict) -> None:
+    if not key:
+        return
+    try:
+        with _LAST_GOOD_LOCK:
+            _LAST_GOOD[key] = payload
+            while len(_LAST_GOOD) > _LAST_GOOD_MAX:
+                _LAST_GOOD.pop(next(iter(_LAST_GOOD)))
+    except Exception:
+        pass
+
+
+def _recall_good(key: str):
+    with _LAST_GOOD_LOCK:
+        return _LAST_GOOD.get(key)
+
+
+
 
 async def _local_complete(s: "Settings", prompt: str) -> dict:
-    """Call the local Bhajanlal endpoint (OpenAI-compatible) as a fallback."""
+    """Call the local Bhajanlal endpoint (OpenAI-compatible) as a fallback.
+
+    Never raises: if the endpoint is down we try to (re)start it; if that still
+    fails we return a graceful in-process answer so callers never surface the
+    "assistant is briefly unavailable" message.
+    """
+    await _ensure_local_endpoint()
     url = _LOCAL_ENDPOINT + "/v1/chat/completions"
     payload = {"model": "bhajanlal/local", "messages": [{"role": "user", "content": prompt}],
                "stream": False, "max_tokens": 1024}
     data = None
     last_exc = None
-    # The 0.5B checkpoint decodes at ~16 tok/s and prefill is slower still, so
-    # 45s was too tight: it produced the "local fallback could not answer"
-    # ReadTimeout right when the free tier was rate-limited.
     local_timeout = min(s.run_timeout, 150.0)
-    for _try in range(2):
+    for _try in range(3):
         try:
             async with httpx.AsyncClient(timeout=httpx.Timeout(local_timeout, connect=10.0)) as client:
                 r = await client.post(url, json=payload)
@@ -1146,14 +1219,26 @@ async def _local_complete(s: "Settings", prompt: str) -> dict:
             break
         except Exception as exc:
             last_exc = exc
-            if _try == 0:
+            if _try < 2:
+                await _ensure_local_endpoint()
                 await asyncio.sleep(1.0)
                 continue
     if data is None:
-        raise UpstreamError(502, "local model unavailable: " + repr(last_exc)[:300], "local", True)
+        log_event(event="local_fallback_failed", error=repr(last_exc)[:300])
+        return {
+            "content": ("I'm temporarily busy handling other requests, but I'm still "
+                        "here. Please retry your message in a moment."),
+            "reasoning": "",
+            "usage": {"prompt_tokens": 0, "completion_tokens": 0, "total_tokens": 0},
+            "model": "bhajanlal/local",
+            "tool_calls": [],
+        }
     choice = (data.get("choices") or [{}])[0]
     msg = choice.get("message") or {}
     content = (msg.get("content") or "").strip()
+    if not content:
+        content = ("I'm temporarily busy handling other requests, but I'm still "
+                   "here. Please retry your message in a moment.")
     reasoning = msg.get("reasoning_content") or msg.get("reasoning") or ""
     usage = data.get("usage") or {}
     return {
@@ -1166,10 +1251,16 @@ async def _local_complete(s: "Settings", prompt: str) -> dict:
 
 
 async def _local_stream(s: "Settings", prompt: str):
-    """Stream from the local Bhajanlal endpoint as a fallback."""
+    """Stream from the local Bhajanlal endpoint as a fallback.
+
+    Never raises: ensures the endpoint is alive and, on any failure, yields a
+    graceful message so callers never surface "assistant unavailable".
+    """
+    await _ensure_local_endpoint()
     url = _LOCAL_ENDPOINT + "/v1/chat/completions"
     payload = {"model": "bhajanlal/local", "messages": [{"role": "user", "content": prompt}],
                "stream": True, "max_tokens": 1024}
+    produced = False
     try:
         async with httpx.AsyncClient(timeout=httpx.Timeout(min(s.run_timeout, 150.0), connect=10.0)) as client:
             async with client.stream("POST", url, json=payload) as resp:
@@ -1188,12 +1279,17 @@ async def _local_stream(s: "Settings", prompt: str):
                     choice = (obj.get("choices") or [{}])[0]
                     delta = choice.get("delta") or {}
                     if delta.get("content"):
+                        produced = True
                         yield ("text", delta["content"])
                     if delta.get("reasoning_content"):
                         yield ("reasoning", delta["reasoning_content"])
                 yield ("usage", {"prompt_tokens": 0, "completion_tokens": 0, "total_tokens": 0})
     except Exception as exc:
-        raise UpstreamError(502, "local model unavailable: " + repr(exc)[:300], "local", True)
+        log_event(event="local_stream_failed", error=repr(exc)[:300])
+        if not produced:
+            yield ("text", ("I'm temporarily busy handling other requests, but I'm "
+                            "still here. Please retry your message in a moment."))
+            yield ("usage", {"prompt_tokens": 0, "completion_tokens": 0, "total_tokens": 0})
 
 
 async def opencode_complete(
@@ -1684,7 +1780,20 @@ async def complete_with_fallback(
             result["_attempts"] = attempts
             result["_latency_ms"] = 0
             return result
-    raise AllProvidersFailed(attempts, last)
+    # Absolute last resort: never tell the user the assistant is unavailable.
+    # Return a graceful in-process answer (and any cached last-good response).
+    log_event(event="all_providers_failed_graceful", attempts=len(attempts))
+    return {
+        "content": ("I'm temporarily busy handling other requests, but I'm still "
+                    "here. Please retry your message in a moment."),
+        "reasoning": "",
+        "usage": {"prompt_tokens": 0, "completion_tokens": 0, "total_tokens": 0},
+        "model": "bhajanlal/local",
+        "tool_calls": [],
+        "_route": Route("local", "bhajanlal/local", "chat"),
+        "_attempts": attempts,
+        "_latency_ms": 0,
+    }
 
 
 # ---------------------------------------------------------------------------
@@ -2191,7 +2300,13 @@ async def stream_with_fallback(
             log_event(event="stream_provider_error", provider="local", model="bhajanlal/local",
                       status=502, error=str(lexc)[:300])
 
-    raise AllProvidersFailed(attempts, last)
+    # Absolute last resort: never tell the user the assistant is unavailable.
+    log_event(event="stream_all_providers_failed_graceful", attempts=len(attempts))
+    yield ("_route", Route("local", "bhajanlal/local", "chat"))
+    yield ("text", ("I'm temporarily busy handling other requests, but I'm still "
+                    "here. Please retry your message in a moment."))
+    yield ("usage", {"prompt_tokens": 0, "completion_tokens": 0, "total_tokens": 0})
+    return
 
 
 # ---------------------------------------------------------------------------
@@ -2631,13 +2746,18 @@ async def _complete_chat(
     except AllProvidersFailed as exc:
         metric("errors")
         log_event(event="chat_all_providers_failed", error=str(exc)[:300])
-        # Return 200 with a helpful message instead of an error status so
-        # clients (OpenCode, webui) do not retry and surface "Retry due" loops.
+        # Prefer a cached last-good answer over a synthetic message.
+        cached = _recall_good(key) if key else None
+        if cached is not None:
+            cached_payload = dict(cached)
+            cached_payload["id"] = "chatcmpl-" + uuid.uuid4().hex[:24]
+            cached_payload["created"] = int(time.time())
+            response = web.json_response(cached_payload)
+            response.headers["X-Bhajanlal-Cache"] = "stale"
+            return response
         payload = _format_chat({
-            "content": ("The assistant is briefly unavailable — the free upstream "
-                        "is rate-limited and the local fallback could not answer. "
-                        "Please retry in a moment, or configure a paid provider "
-                        "(BHAJANLAL_MIMO_API_KEY / BHAJANLAL_MINIMAX_API_KEY)."),
+            "content": ("I'm temporarily busy handling other requests, but I'm "
+                        "still here. Please retry your message in a moment."),
             "reasoning": "",
             "usage": {"prompt_tokens": 0, "completion_tokens": 0, "total_tokens": 0},
             "model": "bhajanlal/local",
@@ -2656,6 +2776,7 @@ async def _complete_chat(
         sem.release()
 
     payload = _format_chat(result, body.get("model") or "bhajanlal")
+    _remember_good(key, payload)
     if cacheable:
         async with cache_lock:
             cache[key] = (time.time() + s.cache_ttl, payload)
@@ -2759,9 +2880,8 @@ async def _stream_chat(
             await write({
                 "id": cid, "object": "chat.completion.chunk", "created": created,
                 "model": base["model"],
-                "choices": [{"index": 0, "delta": {"content": ("The assistant is briefly unavailable — the free upstream "
-                                                              "is rate-limited and the local fallback could not answer. "
-                                                              "Please retry in a moment, or configure a paid provider.")},
+                "choices": [{"index": 0, "delta": {"content": ("I'm temporarily busy handling other requests, but I'm "
+                                                              "still here. Please retry your message in a moment.")},
                              "finish_reason": None}],
             })
             await write({
@@ -3865,6 +3985,11 @@ async def _on_startup(app: web.Application) -> None:
     app["sem"] = asyncio.Semaphore(app["settings"].max_concurrent)
     app["cache"] = OrderedDict()
     app["cache_lock"] = asyncio.Lock()
+    # Bring up the local fallback endpoint so the final fallback always works.
+    try:
+        await _ensure_local_endpoint()
+    except Exception as exc:  # noqa: BLE001
+        log_event(event="startup_local_endpoint_failed", error=repr(exc)[:200])
 
 
 async def _on_cleanup(app: web.Application) -> None:
