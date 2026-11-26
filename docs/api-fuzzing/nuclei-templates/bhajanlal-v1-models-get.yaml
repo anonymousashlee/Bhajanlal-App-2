@@ -1,0 +1,25 @@
+id: bhajanlal-v1-models-get
+info:
+  name: Bhajanlal /v1/models GET fuzz
+  author: bhajanlal
+  severity: medium
+  description: Auto-generated from OpenAPI spec for GET /v1/models.
+http:
+- method: GET
+  path:
+  - '{{BaseURL}}/v1/models'
+  matchers:
+  - type: status
+    status:
+    - 500
+    - 502
+    - 503
+  - type: word
+    words:
+    - traceback
+    - Traceback
+    - Exception
+    - uid=
+    - 'root:'
+    condition: or
+  matchers-condition: or

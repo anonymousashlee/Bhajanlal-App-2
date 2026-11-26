@@ -1,0 +1,25 @@
+id: bhajanlal-metrics-get
+info:
+  name: Bhajanlal /metrics GET fuzz
+  author: bhajanlal
+  severity: medium
+  description: Auto-generated from OpenAPI spec for GET /metrics.
+http:
+- method: GET
+  path:
+  - '{{BaseURL}}/metrics'
+  matchers:
+  - type: status
+    status:
+    - 500
+    - 502
+    - 503
+  - type: word
+    words:
+    - traceback
+    - Traceback
+    - Exception
+    - uid=
+    - 'root:'
+    condition: or
+  matchers-condition: or

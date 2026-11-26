@@ -1,0 +1,37 @@
+id: bhajanlal-skills-fuzz
+info:
+  name: Bhajanlal /v1/skills fuzz
+  author: bhajanlal
+  severity: medium
+  description: Fuzzes q/id/limit parameters for injection and path traversal.
+http:
+  - method: GET
+    path:
+      - "{{BaseURL}}/v1/skills?q={{q}}&limit={{limit}}"
+      - "{{BaseURL}}/v1/skills?id={{id}}"
+    payloads:
+      q:
+        - "auth"
+        - "' OR 1=1 --"
+        - "<script>alert(1)</script>"
+        - "../../etc/passwd"
+      id:
+        - "api-fuzzing-nuclei"
+        - "../../etc/passwd"
+        - "null"
+      limit:
+        - "20"
+        - "999999"
+        - "-1"
+        - "0"
+    attack: pitchfork
+    matchers:
+      - type: status
+        status:
+          - 500
+      - type: word
+        words:
+          - "traceback"
+          - "Traceback"
+        condition: or
+    matchers-condition: or

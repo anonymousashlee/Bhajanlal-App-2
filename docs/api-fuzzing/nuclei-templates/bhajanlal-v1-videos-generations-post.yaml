@@ -1,0 +1,28 @@
+id: bhajanlal-v1-videos-generations-post
+info:
+  name: Bhajanlal /v1/videos/generations POST fuzz
+  author: bhajanlal
+  severity: medium
+  description: Auto-generated from OpenAPI spec for POST /v1/videos/generations.
+http:
+- method: POST
+  path:
+  - '{{BaseURL}}/v1/videos/generations'
+  headers:
+    Content-Type: application/json
+  body: '{}'
+  matchers:
+  - type: status
+    status:
+    - 500
+    - 502
+    - 503
+  - type: word
+    words:
+    - traceback
+    - Traceback
+    - Exception
+    - uid=
+    - 'root:'
+    condition: or
+  matchers-condition: or

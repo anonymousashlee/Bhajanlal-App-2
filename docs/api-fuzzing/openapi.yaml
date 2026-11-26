@@ -1,0 +1,133 @@
+openapi: 3.0.3
+info:
+  title: Bhajanlal Serve Gateway API
+  version: "2.2.0"
+  description: OpenAPI surface derived from serve/backend.py route table (aiohttp).
+servers:
+  - url: http://127.0.0.1:8080
+paths:
+  /health:
+    get:
+      summary: Health check
+      responses:
+        "200":
+          description: OK
+  /healthz:
+    get:
+      summary: Health check (alias)
+      responses:
+        "200":
+          description: OK
+  /v1/models:
+    get:
+      summary: List models
+      responses:
+        "200":
+          description: Model list
+  /v1/skills:
+    get:
+      summary: Skill library
+      parameters:
+        - name: q
+          in: query
+          schema: { type: string }
+        - name: id
+          in: query
+          schema: { type: string }
+        - name: limit
+          in: query
+          schema: { type: integer }
+      responses:
+        "200":
+          description: Skill catalog
+  /v1/train/status:
+    get:
+      summary: Training status
+      responses:
+        "200":
+          description: Status
+  /v1/config:
+    get:
+      summary: Service config
+      responses:
+        "200":
+          description: Config
+  /metrics:
+    get:
+      summary: Metrics
+      responses:
+        "200":
+          description: Metrics
+  /v1/train/run:
+    post:
+      summary: Trigger training
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                dry_run: { type: boolean }
+                stage: { type: string }
+      responses:
+        "202":
+          description: Started
+  /v1/chat/completions:
+    post:
+      summary: Chat completions (OpenAI-compatible)
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                model: { type: string }
+                messages: { type: array }
+                stream: { type: boolean }
+      responses:
+        "200":
+          description: Completion
+  /v1/agent/run:
+    post:
+      summary: Agent run
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        "200":
+          description: Result
+  /v1/media/generations:
+    post:
+      summary: Media generation
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        "200":
+          description: Result
+  /v1/videos/generations:
+    post:
+      summary: Video generation (alias)
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        "200":
+          description: Result
+  /v1/images/generations:
+    post:
+      summary: Image generation (alias)
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        "200":
+          description: Result

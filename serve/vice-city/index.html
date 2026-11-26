@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>VICE NEON — Open World</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%2308041a'/%3E%3Ctext x='32' y='44' font-size='36' font-family='Impact,sans-serif' fill='%23ff2e88' text-anchor='middle'%3EV%3C/text%3E%3C/svg%3E" />
+<link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <canvas id="game"></canvas>
+
+  <div id="startScreen">
+    <div class="scanlines"></div>
+    <div class="start-inner">
+      <div class="logo">
+        <div class="logo-top">WELCOME TO</div>
+        <div class="logo-main">VICE&nbsp;NEON</div>
+        <div class="logo-sub">SUNSET CITY &mdash; 1986</div>
+      </div>
+      <div class="start-card">
+        <div class="ctrl-row"><span class="key">W A S D</span><span>Move / Drive</span></div>
+        <div class="ctrl-row"><span class="key">MOUSE</span><span>Look around</span></div>
+        <div class="ctrl-row"><span class="key">SHIFT</span><span>Sprint / Boost</span></div>
+        <div class="ctrl-row"><span class="key">SPACE</span><span>Jump / Handbrake</span></div>
+        <div class="ctrl-row"><span class="key">F</span><span>Enter / Exit vehicle</span></div>
+        <div class="ctrl-row"><span class="key">LMB</span><span>Punch</span></div>
+        <div class="ctrl-row"><span class="key">H</span><span>Honk horn</span></div>
+        <div class="ctrl-row"><span class="key">R</span><span>Change radio</span></div>
+      </div>
+      <button id="startBtn">ENTER THE CITY</button>
+      <div class="hint">Click to lock the mouse &middot; ESC to release</div>
+    </div>
+  </div>
+
+  <div id="hud" class="hidden">
+    <div class="hud-topright">
+      <div id="money">$0</div>
+      <div id="wanted">
+        <span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span>
+      </div>
+    </div>
+    <div class="hud-topleft">
+      <div class="minimap-wrap">
+        <canvas id="minimap" width="200" height="200"></canvas>
+        <div class="minimap-frame"></div>
+        <div class="minimap-n">N</div>
+      </div>
+      <div class="vitals">
+        <div class="bar"><div class="bar-fill health" id="healthBar"></div><span class="bar-label">HEALTH</span></div>
+        <div class="bar"><div class="bar-fill armor" id="armorBar"></div><span class="bar-label">ARMOR</span></div>
+        <div class="bar"><div class="bar-fill stamina" id="staminaBar"></div><span class="bar-label">SPRINT</span></div>
+      </div>
+    </div>
+    <div id="missionBox">
+      <div class="mission-tag">MISSION</div>
+      <div id="missionText"></div>
+    </div>
+    <div id="subtitle" class="hidden"><b id="subName"></b> <span id="subText"></span></div>
+    <div id="radio" class="hidden">
+      <div class="radio-eq"><i></i><i></i><i></i><i></i><i></i></div>
+      <div class="radio-meta">
+        <div class="radio-station" id="radioStation">NEON WAVE FM</div>
+        <div class="radio-track" id="radioTrack"></div>
+      </div>
+    </div>
+    <div id="speedo" class="hidden">
+      <div class="speed-num" id="speedNum">0</div>
+      <div class="speed-unit">KM/H</div>
+      <div class="gear" id="gearLabel">DRIVE</div>
+    </div>
+    <div id="crosshair"></div>
+    <div id="hint" class="hidden"></div>
+    <div id="prompt" class="hidden"></div>
+    <div id="vignette"></div>
+    <div id="toast"></div>
+  </div>
+
+  <div id="wasted"><span>WASTED</span></div>
+
+  <div id="pauseScreen" class="hidden">
+    <div class="pause-card">
+      <div class="pause-title">PAUSED</div>
+      <button id="resumeBtn">RESUME</button>
+      <div class="ctrl-row"><span class="key">ESC</span><span>Resume</span></div>
+    </div>
+  </div>
+
+  <script type="importmap">
+    { "imports": { "three": "./vendor/three.module.js" } }
+  </script>
+  <script type="module" src="./src/main.js"></script>
+</body>
+</html>

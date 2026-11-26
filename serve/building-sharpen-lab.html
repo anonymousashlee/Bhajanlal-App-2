@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>3D Building Mesh Sharpening Lab</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:#0b0d12;color:#e6e9ef;font-family:ui-monospace,monospace;overflow:hidden}
+  #wrap{position:relative;width:100vw;height:100vh}
+  canvas{display:block;width:100%;height:100%}
+  #hud{position:absolute;top:10px;left:10px;font-size:12px;line-height:1.6;
+    background:rgba(0,0,0,.82);color:#f8fafc;padding:8px 12px;border-radius:6px;
+    pointer-events:none;border:1px solid rgba(255,255,255,.25);
+    backdrop-filter:blur(6px) saturate(1.2);text-shadow:0 1px 2px rgba(0,0,0,.9);
+    box-shadow:0 4px 16px rgba(0,0,0,.5);max-width:420px}
+  #hud b{color:#38bdf8}
+  #ctrl{position:absolute;bottom:10px;left:10px;font-size:11px;opacity:.9;pointer-events:none;
+    color:#f8fafc;text-shadow:0 1px 2px rgba(0,0,0,.9);background:rgba(0,0,0,.55);
+    padding:4px 8px;border-radius:4px;}
+  .ok{color:#4ade80} .bad{color:#f87171}
+</style>
+</head>
+<body>
+<div id="wrap"><canvas id="c"></canvas></div>
+<div id="hud"></div>
+<div id="ctrl">Drag to orbit · Scroll to zoom · B toggle sharpen · N toggle normals · L cycle light</div>
+<script type="importmap">
+{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"}}
+</script>
+<script type="module">
+import * as THREE from 'three';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+
+// ---------- Step 1: smooth normal recomputation (CPU) ----------
+function recomputeSmoothNormals(geometry){
+  const pos = geometry.attributes.position;
+  const idx = geometry.index;
+  const count = idx ? idx.count : pos.count;
+  const normals = new Float32Array(pos.count * 3);
+  const get = (i)=>[pos.getX(i),pos.getY(i),pos.getZ(i)];
+  const addFaceNormal = (a,b,c)=>{
+    const va=get(a),vb=get(b),vc=get(c);
+    const e1=[vb[0]-va[0],vb[1]-va[1],vb[2]-va[2]];
+    const e2=[vc[0]-va[0],vc[1]-va[1],vc[2]-va[2]];
+    const n=[e1[1]*e2[2]-e1[2]*e2[1], e1[2]*e2[0]-e1[0]*e2[2], e1[0]*e2[1]-e1[1]*e2[0]];
+    const len=Math.hypot(...n)||1;
+    n[0]/=len;n[1]/=len;n[2]/=len;
+    for(const v of [a,b,c]){ normals[v*3]+=n[0]; normals[v*3+1]+=n[1]; normals[v*3+2]+=n[2]; }
+  };
+  if(idx){ for(let i=0;i<count;i+=3) addFaceNormal(idx.getX(i),idx.getX(i+1),idx.getX(i+2)); }
+  else { for(let i=0;i<count;i+=3) addFaceNormal(i,i+1,i+2); }
+  for(let i=0;i<pos.count;i++){
+    const x=normals[i*3],y=normals[i*3+1],z=normals[i*3+2];
+    const len=Math.hypot(x,y,z)||1;
+    normals[i*3]=x/len; normals[i*3+1]=y/len; normals[i*3+2]=z/len;
+  }
+  if(geometry.attributes.normal){ geometry.attributes.normal.array.set(normals); geometry.attributes.normal.needsUpdate=true; }
+  else { geometry.setAttribute('normal', new THREE.BufferAttribute(normals,3)); }
+  return geometry;
+}
+
+function validateCrispness(geometry, threshold=0.98){
+  const n=geometry.attributes.normal;
+  if(!n) return {ok:false,reason:'no normals',normalizedRatio:0,badCount:0};
+  let bad=0;
+  for(let i=0;i<n.count;i++){
+    const l=Math.hypot(n.getX(i),n.getY(i),n.getZ(i));
+    if(Math.abs(l-1)>1e-3) bad++;
+  }
+  const ratio=1-bad/n.count;
+  return {ok:ratio>=threshold, normalizedRatio:ratio, badCount:bad};
+}
+
+// ---------- Step 2-4: sharpening shader ----------
+const vertexShader = `
+  varying vec3 v_normal;
+  varying vec3 v_viewDir;
+  varying vec2 v_uv;
+  void main(){
+    v_normal = normalize(normalMatrix * normal);
+    vec4 mv = modelViewMatrix * vec4(position,1.0);
+    v_viewDir = -mv.xyz;
+    v_uv = uv;
+    gl_Position = projectionMatrix * mv;
+  }
+`;
+const fragmentShader = `
+  precision highp float;
+  uniform sampler2D u_colorTex;
+  uniform vec3 u_lightDir;
+  uniform float u_ambient;
+  uniform float u_specular;
+  uniform float u_shininess;
+  uniform float u_overBrightCap;
+  varying vec3 v_normal;
+  varying vec3 v_viewDir;
+  varying vec2 v_uv;
+  void main(){
+    vec3 N = normalize(v_normal);
+    vec3 L = normalize(u_lightDir);
+    vec3 V = normalize(v_viewDir);
+    vec3 H = normalize(L + V);
+    float NdotL = max(dot(N,L),0.0);
+    float rim = pow(1.0 - max(dot(N,V),0.0), 3.0) * 0.25;
+    float spec = pow(max(dot(N,H),0.0), u_shininess) * u_specular;
+    float lum = u_ambient + (1.0 - u_ambient) * NdotL + rim + spec;
+    lum = min(lum, u_overBrightCap);
+    vec3 base = texture2D(u_colorTex, v_uv).rgb;
+    vec3 color = base * lum;
+    float edge = smoothstep(0.3,0.6,NdotL) * (1.0 - smoothstep(0.6,0.9,NdotL));
+    color = mix(color, color * 1.08, edge * 0.3);
+    gl_FragColor = vec4(color,1.0);
+  }
+`;
+
+// ---------- scene ----------
+const canvas = document.getElementById('c');
+const renderer = new THREE.WebGLRenderer({canvas, antialias:true});
+renderer.setPixelRatio(devicePixelRatio);
+renderer.setSize(innerWidth, innerHeight);
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0x0b0d12);
+const camera = new THREE.PerspectiveCamera(55, innerWidth/innerHeight, 1, 2000);
+camera.position.set(60,80,120);
+const controls = new OrbitControls(camera, canvas);
+controls.target.set(0,15,0);
+
+// light cycle
+const lightDirs = [
+  new THREE.Vector3(0.4,0.8,0.3).normalize(),
+  new THREE.Vector3(-0.5,0.6,0.4).normalize(),
+  new THREE.Vector3(0.2,0.9,-0.3).normalize(),
+];
+let lightIdx = 0;
+
+// texture for buildings
+const texCanvas = document.createElement('canvas'); texCanvas.width=64; texCanvas.height=64;
+const tctx = texCanvas.getContext('2d');
+for(let y=0;y<64;y++) for(let x=0;x<64;x++){
+  const v = 180 + (Math.sin(x*0.3)*Math.cos(y*0.3))*20;
+  tctx.fillStyle = `rgb(${v-30},${v-20},${v})`;
+  tctx.fillRect(x,y,1,1);
+}
+const colorTex = new THREE.CanvasTexture(texCanvas);
+
+// build extruded meshes from random footprints
+const buildings = [];
+const group = new THREE.Group();
+scene.add(group);
+let sharpenOn = true;
+let normalsOn = true;
+
+function makeBuilding(x,z,w,d,h){
+  const geo = new THREE.BoxGeometry(w,h,d);
+  geo.translate(x,h/2,z);
+  // per-face UVs already; normals default flat. Recompute smooth.
+  recomputeSmoothNormals(geo);
+  const mat = new THREE.ShaderMaterial({
+    uniforms:{
+      u_colorTex:{value:colorTex},
+      u_lightDir:{value:lightDirs[lightIdx].clone()},
+      u_ambient:{value:0.2},
+      u_specular:{value:0.15},
+      u_shininess:{value:48.0},
+      u_overBrightCap:{value:0.85},
+    },
+    vertexShader, fragmentShader,
+  });
+  const mesh = new THREE.Mesh(geo, mat);
+  mesh.userData.baseMat = mat;
+  group.add(mesh);
+  buildings.push({mesh, geo});
+}
+
+// generate a small city
+for(let i=0;i<40;i++){
+  const x = (Math.random()-0.5)*180;
+  const z = (Math.random()-0.5)*180;
+  const w = 6 + Math.random()*18;
+  const d = 6 + Math.random()*18;
+  const h = 8 + Math.random()*40;
+  makeBuilding(x,z,w,d,h);
+}
+
+// ground
+const ground = new THREE.Mesh(new THREE.PlaneGeometry(400,400), new THREE.MeshBasicMaterial({color:0x1c2330}));
+ground.rotation.x = -Math.PI/2; scene.add(ground);
+
+// ambient-ish hemi for base (kept low)
+const hemi = new THREE.HemisphereLight(0x88aaff,0x223344,0.25); scene.add(hemi);
+
+// ---------- crispness validation aggregate ----------
+function aggregateCrispness(){
+  let total=0,bad=0;
+  for(const b of buildings){ const r=validateCrispness(b.geo); total+=b.geo.attributes.normal.count; bad+=r.badCount; }
+  const ratio = 1 - bad/total;
+  return {ratio, bad, total};
+}
+
+// ---------- toggles ----------
+addEventListener('keydown', (e)=>{
+  if(e.code==='KeyB'){ sharpenOn=!sharpenOn; for(const b of buildings){ b.mesh.material = sharpenOn ? b.mesh.userData.baseMat : new THREE.MeshBasicMaterial({map:colorTex}); } }
+  if(e.code==='KeyN'){ normalsOn=!normalsOn; for(const b of buildings){ if(normalsOn) recomputeSmoothNormals(b.geo); } }
+  if(e.code==='KeyL'){ lightIdx=(lightIdx+1)%lightDirs.length; for(const b of buildings){ b.mesh.userData.baseMat.uniforms.u_lightDir.value.copy(lightDirs[lightIdx]); } }
+});
+
+addEventListener('resize', ()=>{ renderer.setSize(innerWidth,innerHeight); camera.aspect=innerWidth/innerHeight; camera.updateProjectionMatrix(); });
+
+// ---------- loop ----------
+const hud = document.getElementById('hud');
+function tick(){
+  controls.update();
+  renderer.render(scene,camera);
+  const c = aggregateCrispness();
+  const cls = c.ratio>=0.98 ? 'ok':'bad';
+  hud.innerHTML = `<b>3D Building Mesh Sharpening Lab</b><br>`+
+    `buildings: ${buildings.length} · sharpen: ${sharpenOn?'ON':'OFF'} · normals: ${normalsOn?'smooth':'flat'}<br>`+
+    `light dir: ${lightIdx+1}/${lightDirs.length} · ambient 0.20 · specular 0.15 · shininess 48<br>`+
+    `crispness: <span class="${cls}">${(c.ratio*100).toFixed(2)}%</span> (${c.bad} bad / ${c.total} verts)<br>`+
+    `<span style="opacity:.7">Step1 recompute normals · Step2 edge lighting+rim+spec · Step3 over-bright cap 0.85 · Step4 micro-contrast edge boost</span>`;
+  requestAnimationFrame(tick);
+}
+tick();
+</script>
+</body>
+</html>

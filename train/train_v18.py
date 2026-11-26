@@ -155,10 +155,11 @@ def main():
 
     # Fine-tune on top of the merged dense checkpoint (preserves prior caps).
     model = AutoModelForCausalLM.from_pretrained(
-        str(BASE_CKPT), cache_dir=str(CACHE), torch_dtype=torch.float32,
+        str(BASE_CKPT), cache_dir=str(CACHE), torch_dtype=torch.float16,
         trust_remote_code=True)
-    # Speed: skip gradient checkpointing (MPS memory headroom is enough for 0.5B
-    # + LoRA; checkpointing cost ~2x forward passes per step).
+    # fp16 + gradient checkpointing to stay inside MPS memory budget (0.5B + LoRA).
+    model.gradient_checkpointing_enable()
+    model.config.use_cache = False
     model.to(device)
     torch.set_float32_matmul_precision("high")
 
@@ -250,7 +251,7 @@ def main():
     from peft import PeftModel
 
     base = AutoModelForCausalLM.from_pretrained(
-        str(BASE_CKPT), cache_dir=str(CACHE), torch_dtype=torch.float32,
+        str(BASE_CKPT), cache_dir=str(CACHE), torch_dtype=torch.float16,
         trust_remote_code=True)
     merged_model = PeftModel.from_pretrained(base, str(CKPT))
     merged_model = merged_model.merge_and_unload()

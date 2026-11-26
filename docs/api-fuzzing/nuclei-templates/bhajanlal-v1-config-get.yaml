@@ -1,0 +1,25 @@
+id: bhajanlal-v1-config-get
+info:
+  name: Bhajanlal /v1/config GET fuzz
+  author: bhajanlal
+  severity: medium
+  description: Auto-generated from OpenAPI spec for GET /v1/config.
+http:
+- method: GET
+  path:
+  - '{{BaseURL}}/v1/config'
+  matchers:
+  - type: status
+    status:
+    - 500
+    - 502
+    - 503
+  - type: word
+    words:
+    - traceback
+    - Traceback
+    - Exception
+    - uid=
+    - 'root:'
+    condition: or
+  matchers-condition: or

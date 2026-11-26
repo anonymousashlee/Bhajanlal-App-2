@@ -1,0 +1,28 @@
+id: bhajanlal-v1-agent-run-post
+info:
+  name: Bhajanlal /v1/agent/run POST fuzz
+  author: bhajanlal
+  severity: medium
+  description: Auto-generated from OpenAPI spec for POST /v1/agent/run.
+http:
+- method: POST
+  path:
+  - '{{BaseURL}}/v1/agent/run'
+  headers:
+    Content-Type: application/json
+  body: '{}'
+  matchers:
+  - type: status
+    status:
+    - 500
+    - 502
+    - 503
+  - type: word
+    words:
+    - traceback
+    - Traceback
+    - Exception
+    - uid=
+    - 'root:'
+    condition: or
+  matchers-condition: or

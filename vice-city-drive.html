@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Vice City Drive</title>
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { overflow:hidden; background:#000; font-family: 'Segoe UI', sans-serif; }
+  canvas { display:block; }
+  #hud { position:fixed; top:12px; left:12px; color:#fff; font-size:14px; text-shadow:0 0 6px #000; z-index:10; }
+  #hud .title { font-size:22px; color:#ff3c78; text-shadow:0 0 8px #ff3c78, 0 0 2px #000; letter-spacing:2px; }
+  #speed { font-size:32px; font-weight:700; color:#00ffea; text-shadow:0 0 10px #00ffea; }
+  #minimap { position:fixed; bottom:12px; right:12px; width:160px; height:160px; border:2px solid #ff3c78; border-radius:8px; background:rgba(0,0,0,0.6); z-index:10; }
+  #controls { position:fixed; bottom:12px; left:12px; color:#aaa; font-size:12px; z-index:10; }
+  #title-screen { position:fixed; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; background:linear-gradient(180deg,#0a0014,#1a0a2e); z-index:20; }
+  #title-screen h1 { font-size:64px; color:#ff3c78; text-shadow:0 0 20px #ff3c78, 0 0 40px #ff00ff; letter-spacing:4px; }
+  #title-screen p { color:#00ffea; margin:20px; font-size:18px; }
+  #title-screen button { padding:14px 40px; font-size:20px; background:#ff3c78; color:#fff; border:none; border-radius:8px; cursor:pointer; box-shadow:0 0 20px #ff3c78; }
+  #title-screen button:hover { background:#ff00ff; }
+</style>
+</head>
+<body>
+<div id="title-screen">
+  <h1>VICE CITY DRIVE</h1>
+  <p>Neon nights. Fast cars. Retro vibes.</p>
+  <button id="start">START ENGINE</button>
+</div>
+<div id="hud" style="display:none;">
+  <div class="title">VICE CITY</div>
+  <div id="speed">0 km/h</div>
+  <div>WASD drive · Space brake · Shift boost</div>
+</div>
+<canvas id="minimap"></canvas>
+<div id="controls">WASD move · Space brake · Shift boost · R reset</div>
+
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+    "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+  }
+}
+</script>
+<script type="module">
+import * as THREE from 'three';
+import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
+import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
+import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
+import { GlitchPass } from 'three/addons/postprocessing/GlitchPass.js';
+import { FilmPass } from 'three/addons/postprocessing/FilmPass.js';
+import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
+
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0x0a0014);
+scene.fog = new THREE.FogExp2(0x0a0014, 0.012);
+
+const camera = new THREE.PerspectiveCamera(60, window.innerWidth/window.innerHeight, 0.1, 1000);
+const renderer = new THREE.WebGLRenderer({ antialias:true, alpha:false });
+renderer.setSize(window.innerWidth, window.innerHeight);
+renderer.setPixelRatio(Math.min(window.devicePixelRatio,2));
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure = 1.2;
+document.body.appendChild(renderer.domElement);
+
+// Post-processing: bloom + film grain + glitch
+const composer = new EffectComposer(renderer);
+composer.addPass(new RenderPass(scene, camera));
+const bloom = new UnrealBloomPass(new THREE.Vector2(window.innerWidth,window.innerHeight), 1.4, 0.4, 0.15);
+composer.addPass(bloom);
+const film = new FilmPass(0.35, 0.025, 648, false);
+composer.addPass(film);
+const glitch = new GlitchPass();
+glitch.goWild = false;
+composer.addPass(glitch);
+composer.addPass(new OutputPass());
+
+// Lights
+const ambient = new THREE.AmbientLight(0x404060, 0.6);
+scene.add(ambient);
+const dir = new THREE.DirectionalLight(0xffaa88, 0.8);
+dir.position.set(50,80,30);
+scene.add(dir);
+
+// Neon point lights scattered
+const neonColors = [0xff3c78, 0x00ffea, 0xff00ff, 0xffff00, 0x00ff88];
+for(let i=0;i<40;i++){
+  const pl = new THREE.PointLight(neonColors[i%neonColors.length], 2.5, 40);
+  pl.position.set((Math.random()-0.5)*200, 3+Math.random()*6, (Math.random()-0.5)*200);
+  scene.add(pl);
+}
+
+// Ground plane with grid
+const groundGeo = new THREE.PlaneGeometry(400,400,40,40);
+const groundMat = new THREE.MeshStandardMaterial({ color:0x1a1a2e, roughness:0.9, metalness:0.1 });
+const ground = new THREE.Mesh(groundGeo, groundMat);
+ground.rotation.x = -Math.PI/2;
+scene.add(ground);
+
+// Grid lines
+const grid = new THREE.GridHelper(400, 40, 0xff3c78, 0x222244);
+grid.position.y = 0.05;
+scene.add(grid);
+
+// Buildings
+const buildings = [];
+for(let i=0;i<120;i++){
+  const w = 4+Math.random()*8;
+  const h = 8+Math.random()*35;
+  const d = 4+Math.random()*8;
+  const geo = new THREE.BoxGeometry(w,h,d);
+  const mat = new THREE.MeshStandardMaterial({
+    color: new THREE.Color().setHSL(0.6+Math.random()*0.2, 0.4, 0.15+Math.random()*0.2),
+    roughness:0.7, metalness:0.3,
+    emissive: neonColors[Math.floor(Math.random()*neonColors.length)],
+    emissiveIntensity: Math.random()*0.15
+  });
+  const b = new THREE.Mesh(geo, mat);
+  const x = (Math.random()-0.5)*360;
+  const z = (Math.random()-0.5)*360;
+  // avoid center road corridor
+  if(Math.abs(x)<12 && Math.abs(z)<12) continue;
+  b.position.set(x, h/2, z);
+  scene.add(b);
+  buildings.push(b);
+}
+
+// Palm trees
+function makePalm(x,z){
+  const trunk = new THREE.Mesh(new THREE.CylinderGeometry(0.3,0.5,6,8), new THREE.MeshStandardMaterial({color:0x3a2a1a}));
+  trunk.position.set(x,3,z); scene.add(trunk);
+  const leaves = new THREE.Mesh(new THREE.ConeGeometry(3,2,8), new THREE.MeshStandardMaterial({color:0x00aa44, emissive:0x004422, emissiveIntensity:0.2}));
+  leaves.position.set(x,7,z); scene.add(leaves);
+}
+for(let i=0;i<60;i++) makePalm((Math.random()-0.5)*360, (Math.random()-0.5)*360);
+
+// Car (player)
+const carGroup = new THREE.Group();
+const carBody = new THREE.Mesh(new THREE.BoxGeometry(2,0.8,4), new THREE.MeshStandardMaterial({color:0xff3c78, metalness:0.6, roughness:0.3, emissive:0x330011, emissiveIntensity:0.4}));
+carBody.position.y = 0.6; carGroup.add(carBody);
+const carTop = new THREE.Mesh(new THREE.BoxGeometry(1.6,0.6,2), new THREE.MeshStandardMaterial({color:0x222233, metalness:0.8, roughness:0.2}));
+carTop.position.set(0,1.3,-0.3); carGroup.add(carTop);
+// wheels
+for(const [wx,wz] of [[-1.1,1.3],[1.1,1.3],[-1.1,-1.3],[1.1,-1.3]]){
+  const w = new THREE.Mesh(new THREE.CylinderGeometry(0.4,0.4,0.3,12), new THREE.MeshStandardMaterial({color:0x111111}));
+  w.rotation.z = Math.PI/2; w.position.set(wx,0.4,wz); carGroup.add(w);
+}
+// headlights
+const hl1 = new THREE.SpotLight(0xffffff, 4, 60, Math.PI/6, 0.5);
+hl1.position.set(-0.7,0.8,2.2); hl1.target.position.set(-0.7,0,10); carGroup.add(hl1); carGroup.add(hl1.target);
+const hl2 = new THREE.SpotLight(0xffffff, 4, 60, Math.PI/6, 0.5);
+hl2.position.set(0.7,0.8,2.2); hl2.target.position.set(0.7,0,10); carGroup.add(hl2); carGroup.add(hl2.target);
+// taillights glow
+const tl = new THREE.Mesh(new THREE.BoxGeometry(1.8,0.2,0.1), new THREE.MeshStandardMaterial({color:0xff0000, emissive:0xff0000, emissiveIntensity:2}));
+tl.position.set(0,0.7,-2.05); carGroup.add(tl);
+carGroup.position.set(0,0,0);
+scene.add(carGroup);
+
+// Camera follow
+let camOffset = new THREE.Vector3(0,6,-12);
+let camLook = new THREE.Vector3(0,0,0);
+
+// Input
+const keys = {};
+window.addEventListener('keydown', e=>{ keys[e.key.toLowerCase()]=true; if(e.key===' ') keys.space=true; });
+window.addEventListener('keyup', e=>{ keys[e.key.toLowerCase()]=false; if(e.key===' ') keys.space=false; });
+
+// Physics state
+const car = { x:0, z:0, angle:0, speed:0, vx:0, vz:0 };
+const MAX_SPEED = 38;
+const ACCEL = 28;
+const BRAKE = 40;
+const FRICTION = 12;
+const TURN_SPEED = 2.2;
+
+// Particles (tire smoke)
+const smokeParticles = [];
+const smokeGeo = new THREE.SphereGeometry(0.4,6,6);
+function spawnSmoke(x,y,z){
+  const m = new THREE.Mesh(smokeGeo, new THREE.MeshBasicMaterial({color:0x888899, transparent:true, opacity:0.6}));
+  m.position.set(x,y,z);
+  m.userData = { life:0, maxLife:1.2, vy:0.5+Math.random()*0.5, vx:(Math.random()-0.5)*2, vz:(Math.random()-0.5)*2, scale:0.4 };
+  scene.add(m);
+  smokeParticles.push(m);
+}
+
+// Minimap
+const minimap = document.getElementById('minimap');
+const mctx = minimap.getContext('2d');
+minimap.width=160; minimap.height=160;
+
+let running = false;
+document.getElementById('start').addEventListener('click', ()=>{
+  document.getElementById('title-screen').style.display='none';
+  document.getElementById('hud').style.display='block';
+  running = true;
+});
+
+// Main loop
+const clock = new THREE.Clock();
+function update(){
+  const dt = Math.min(clock.getDelta(), 0.05);
+  if(running){
+    // Input
+    let accel = 0;
+    if(keys['w']) accel = ACCEL;
+    if(keys['s']) accel = -ACCEL*0.6;
+    if(keys.space) accel = -BRAKE;
+    const boosting = keys['shift'];
+    const boostMult = boosting ? 1.6 : 1.0;
+
+    // Turn (only when moving)
+    if(Math.abs(car.speed) > 0.5){
+      const turnDir = (keys['a']?1:0) - (keys['d']?1:0);
+      car.angle += turnDir * TURN_SPEED * (car.speed/MAX_SPEED) * dt * (car.speed>0?1:-1);
+    }
+
+    // Speed update
+    car.speed += accel * boostMult * dt;
+    // friction
+    if(accel===0 && !keys.space){
+      if(car.speed>0) car.speed = Math.max(0, car.speed - FRICTION*dt);
+      else if(car.speed<0) car.speed = Math.min(0, car.speed + FRICTION*dt);
+    }
+    car.speed = Math.max(-MAX_SPEED*0.4, Math.min(MAX_SPEED*boostMult, car.speed));
+
+    // Velocity
+    car.vx = Math.sin(car.angle)*car.speed;
+    car.vz = Math.cos(car.angle)*car.speed;
+    car.x += car.vx*dt;
+    car.z += car.vz*dt;
+
+    // Keep in bounds
+    car.x = Math.max(-195, Math.min(195, car.x));
+    car.z = Math.max(-195, Math.min(195, car.z));
+
+    carGroup.position.set(car.x,0,car.z);
+    carGroup.rotation.y = car.angle;
+
+    // Smoke when braking/drifting
+    if(keys.space || (Math.abs(car.speed)>20 && (keys['a']||keys['d']))){
+      if(Math.random()<0.6) spawnSmoke(car.x,0.3,car.z);
+    }
+
+    // Update smoke
+    for(let i=smokeParticles.length-1;i>=0;i--){
+      const p = smokeParticles[i];
+      p.userData.life += dt;
+      if(p.userData.life > p.userData.maxLife){ scene.remove(p); smokeParticles.splice(i,1); continue; }
+      const t = p.userData.life/p.userData.maxLife;
+      p.position.x += p.userData.vx*dt;
+      p.position.y += p.userData.vy*dt;
+      p.position.z += p.userData.vz*dt;
+      const s = p.userData.scale*(1+t*2);
+      p.scale.set(s,s,s);
+      p.material.opacity = 0.6*(1-t);
+    }
+
+    // Camera follow (smooth)
+    const targetCam = new THREE.Vector3(car.x - Math.sin(car.angle)*12, 6, car.z - Math.cos(car.angle)*12);
+    camera.position.lerp(targetCam, 0.08);
+    const lookTarget = new THREE.Vector3(car.x, 1, car.z);
+    camera.lookAt(lookTarget);
+
+    // HUD
+    document.getElementById('speed').textContent = Math.round(Math.abs(car.speed)*2.8) + ' km/h';
+
+    // Reset
+    if(keys['r']){ car.x=0; car.z=0; car.speed=0; car.angle=0; }
+
+    // Minimap
+    mctx.fillStyle='rgba(0,0,0,0.4)';
+    mctx.fillRect(0,0,160,160);
+    mctx.strokeStyle='#ff3c78'; mctx.lineWidth=1;
+    mctx.strokeRect(0,0,160,160);
+    // buildings
+    mctx.fillStyle='#444';
+    for(const b of buildings){
+      const mx = 80 + b.position.x*0.4;
+      const mz = 80 + b.position.z*0.4;
+      mctx.fillRect(mx-1,mz-1,2,2);
+    }
+    // car
+    mctx.fillStyle='#00ffea';
+    mctx.save();
+    mctx.translate(80+car.x*0.4, 80+car.z*0.4);
+    mctx.rotate(-car.angle);
+    mctx.fillRect(-3,-4,6,8);
+    mctx.restore();
+  }
+
+  // Glitch pulse occasionally
+  if(Math.random()<0.005) glitch.goWild = true;
+  else if(Math.random()<0.1) glitch.goWild = false;
+
+  composer.render();
+  requestAnimationFrame(update);
+}
+update();
+
+window.addEventListener('resize', ()=>{
+  camera.aspect = window.innerWidth/window.innerHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(window.innerWidth,window.innerHeight);
+  composer.setSize(window.innerWidth,window.innerHeight);
+});
+</script>
+</body>
+</html>

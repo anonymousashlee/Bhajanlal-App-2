@@ -1,0 +1,629 @@
+{"instruction": "How do I make sure I understand what the user actually wants before coding?", "response": "Parse the user's goal, constraints, and desired output format first. Check the codebase for facts. Ask one targeted question only if two interpretations would change the architecture. Then implement the simplest correct solution and verify.", "quadrant": "reasoning"}
+{"instruction": "The user said 'it's broken' with no details. What should I do first?", "response": "Don't guess. Run the build/tests, read the error, and inspect the relevant code. Ask a clarifying question only if the symptom is ambiguous. State assumptions explicitly.", "quadrant": "reasoning"}
+{"instruction": "I have three possible root causes. How do I pick which to test first?", "response": "List the hypotheses ranked by probability and cost to test. Test the cheapest first. Update probabilities with evidence. Conclude with the verified cause.", "quadrant": "reasoning"}
+{"instruction": "The user asked for a quick fix but the code needs a refactor. How do I proceed?", "response": "Honor the user's intent: do the minimal fix now, log the refactor as out-of-scope, and offer it separately. Don't over-engineer.", "quadrant": "reasoning"}
+{"instruction": "My last edit failed twice. What should I do now?", "response": "Stop repeating the failed approach. Change strategy: widen the edit anchor, re-read the file, or try a different diagnostic. Use git checkout to revert if messy.", "quadrant": "reasoning"}
+{"instruction": "I'm unsure about a file path. Should I guess or verify?", "response": "Never guess. Use grep/glob/read to verify the path exists. If still unsure, ask the user or state the assumption.", "quadrant": "reasoning"}
+{"instruction": "The user wants JSON output only. How do I format my response?", "response": "Output bare raw JSON with no markdown fences or commentary, exactly as requested.", "quadrant": "reasoning"}
+{"instruction": "A test is failing intermittently. How do I diagnose?", "response": "Treat intermittent failures as race conditions or env flakiness. Re-run in isolation 3x. Check shared state, missing awaits, and caching.", "quadrant": "reasoning"}
+{"instruction": "I found a bug outside the task scope. What do I do?", "response": "Log it as tech debt and stay in scope. Don't expand a small fix into a refactor without asking.", "quadrant": "reasoning"}
+{"instruction": "The user's request conflicts with an earlier instruction. How do I resolve?", "response": "Prioritize safety > explicit user rules > repo conventions > defaults. Flag the conflict politely and ask which to follow.", "quadrant": "reasoning"}
+{"instruction": "How do I 3d building mesh sharpening?", "response": "Use when tuning normals and lighting on extruded OSM and photorealistic building meshes.", "quadrant": "reasoning"}
+{"instruction": "How do I accessibility high contrast hud?", "response": "Use when ensuring tactical overlays remain readable across bright snow, desert, and ocean tiles.", "quadrant": "reasoning"}
+{"instruction": "How do I active directory audit?", "response": "Use when mapping AD attack paths, Kerberoasting, and AS-REP Roasting risks.", "quadrant": "reasoning"}
+{"instruction": "How do I adr security gate?", "response": "Use when checking code edits against Architectural Decision Records before commit.", "quadrant": "reasoning"}
+{"instruction": "How do I adsb ais dead reckoning smoother?", "response": "Use when interpolating vehicle positions smoothly between transponder pings.", "quadrant": "reasoning"}
+{"instruction": "How do I agent sandbox isolation?", "response": "Use when enforcing Docker/worktree sandboxing for autonomous code execution.", "quadrant": "reasoning"}
+{"instruction": "How do I ambiguity clarification?", "response": "Use when asking one targeted question only when interpretations diverge architecturally.", "quadrant": "reasoning"}
+{"instruction": "How do I api fuzzing nuclei?", "response": "Use when generating custom Nuclei YAML templates from OpenAPI/Swagger specs.", "quadrant": "reasoning"}
+{"instruction": "How do I api key quota and fallback router?", "response": "Use when gracefully falling back from Google 3D Tiles to Cesium Ion or Esri without sudden quality drops.", "quadrant": "reasoning"}
+{"instruction": "How do I artifact aware deblocking?", "response": "Use when smoothing 8x8 macroblock boundaries on heavily compressed municipal H.264 streams.", "quadrant": "reasoning"}
+{"instruction": "How do I artifact signing sigstore?", "response": "Use when implementing Cosign and SLSA provenance verification for build artifacts.", "quadrant": "reasoning"}
+{"instruction": "How do I ask questions if underspecified?", "response": "Use when clarifying target hardware (GPU/mobile) and API keys before heavy shader rewrites.", "quadrant": "reasoning"}
+{"instruction": "How do I asn cidr mapping?", "response": "Use when mapping organizational IP ranges and cloud hosting footprints.", "quadrant": "reasoning"}
+{"instruction": "How do I assumption stating?", "response": "Use when stating assumptions explicitly when uncertain.", "quadrant": "reasoning"}
+{"instruction": "How do I attack surface graph?", "response": "Use when building a knowledge graph of codebase entry points, routes, and external APIs.", "quadrant": "reasoning"}
+{"instruction": "How do I audit logging setup?", "response": "Use when implementing tamper-evident security event logs for incident detection.", "quadrant": "reasoning"}
+{"instruction": "How do I auth bypass testing?", "response": "Use when testing multi-step login flows, 2FA/MFA bypasses, and password reset logic.", "quadrant": "reasoning"}
+{"instruction": "How do I aws iam privesc check?", "response": "Use when analyzing IAM policies for privilege escalation paths.", "quadrant": "reasoning"}
+{"instruction": "How do I bandit python audit?", "response": "Use when running static security analysis on Python codebases for unsafe calls.", "quadrant": "reasoning"}
+{"instruction": "How do I bandwidth adaptive layer loader?", "response": "Use when automatically pausing background layers when inspecting a high-bitrate video stream.", "quadrant": "reasoning"}
+{"instruction": "How do I Bhajanlal Local Demo?", "response": "Use when demonstrating project-local skill discovery in the Bhajanlal serve gateway.", "quadrant": "reasoning"}
+{"instruction": "How do I browser gpu memory profiler?", "response": "Use when detecting and fixing WebGL texture and framebuffer leaks when switching cameras.", "quadrant": "reasoning"}
+{"instruction": "How do I business logic flaw hunt?", "response": "Use when reviewing checkout, quota, and workflow state machines for bypasses.", "quadrant": "reasoning"}
+{"instruction": "How do I cache poisoning audit?", "response": "Use when testing unkeyed HTTP headers and web cache deception vulnerabilities.", "quadrant": "reasoning"}
+{"instruction": "How do I camera frustum clipping plane?", "response": "Use when adjusting near/far clipping planes to stop Z-fighting on projected camera video.", "quadrant": "reasoning"}
+{"instruction": "How do I camera viewshed projection align?", "response": "Use when calibrating FOV, pitch, yaw, and roll so video textures map cleanly onto 3D geometry.", "quadrant": "reasoning"}
+{"instruction": "How do I cctv aspect ratio correction?", "response": "Use when fixing stretched or squished municipal traffic camera feeds using metadata aspect detection.", "quadrant": "reasoning"}
+{"instruction": "How do I certificate transparency audit?", "response": "Use when mining CT logs to uncover hidden staging and dev subdomains.", "quadrant": "reasoning"}
+{"instruction": "How do I cesium frustum culling optimizer?", "response": "Use when prioritizing GPU memory for foreground tiles in the active camera frustum.", "quadrant": "reasoning"}
+{"instruction": "How do I cesium ion imagery switcher?", "response": "Use when building seamless runtime switching between Bing Aerial, Esri World Imagery, and Sentinel layers.", "quadrant": "reasoning"}
+{"instruction": "How do I cesium tile lod tuning?", "response": "Use when adjusting maximumScreenSpaceError to force higher-detail 3D tile loading at close range.", "quadrant": "reasoning"}
+{"instruction": "How do I chain of thought reasoning?", "response": "Use when reasoning step-by-step internally before producing the final answer.", "quadrant": "reasoning"}
+{"instruction": "How do I cloud mask segmentation?", "response": "Use when automatically hiding or making semi-transparent thick cloud patches blocking satellite terrain.", "quadrant": "reasoning"}
+{"instruction": "How do I cloud metadata protection?", "response": "Use when enforcing IMDSv2 to block SSRF-based credential theft.", "quadrant": "reasoning"}
+{"instruction": "How do I cloud security posture?", "response": "Use when auditing AWS, Azure, and GCP configurations for public buckets and overly permissive IAM.", "quadrant": "reasoning"}
+{"instruction": "How do I code change verification?", "response": "Use when running build, typecheck, and Vite preview checks after modifying Cesium or GLSL files.", "quadrant": "reasoning"}
+{"instruction": "How do I command injection audit?", "response": "Use when tracing unsanitized user inputs passed to OS shell execution functions.", "quadrant": "reasoning"}
+{"instruction": "How do I container image cve scan?", "response": "Use when scanning container layers with Trivy/Grype for vulnerable OS packages.", "quadrant": "reasoning"}
+{"instruction": "How do I context grounding?", "response": "Use when grounding answers in retrieved files and tool output instead of guessing.", "quadrant": "reasoning"}
+{"instruction": "How do I cors media proxy hardening?", "response": "Use when preventing proxy compression or downscaling when relaying external municipal camera images.", "quadrant": "reasoning"}
+{"instruction": "How do I cors misconfiguration?", "response": "Use when testing CORS policies for wildcard or reflected origins.", "quadrant": "reasoning"}
+{"instruction": "How do I counterfactual checking?", "response": "Use when stress-testing solutions against null, zero, concurrency, and timeout edge cases.", "quadrant": "reasoning"}
+{"instruction": "How do I credential stuffing sim?", "response": "Use when simulating automated login checks against staging endpoints using Hydra/Nuclei.", "quadrant": "reasoning"}
+{"instruction": "How do I crisp vector svg iconography?", "response": "Use when replacing blurry raster glyphs with razor-sharp SDF icons in Cesium.", "quadrant": "reasoning"}
+{"instruction": "How do I cryptography audit?", "response": "Use when replacing weak algorithms (MD5, SHA1, ECB) with AEAD and KMS envelope encryption.", "quadrant": "reasoning"}
+{"instruction": "How do I csp header generator?", "response": "Use when crafting strict Content-Security-Policy and security headers (HSTS, X-Frame-Options).", "quadrant": "reasoning"}
+{"instruction": "How do I csrf protection audit?", "response": "Use when verifying anti-CSRF tokens, SameSite cookie flags, and origin headers.", "quadrant": "reasoning"}
+{"instruction": "How do I custom postprocess pipeline composer?", "response": "Use when chaining denoise, sharpening, and color-grading passes without tanking FPS.", "quadrant": "reasoning"}
+{"instruction": "How do I custom rtsp source pack builder?", "response": "Use when scaffolding JSON source packs to ingest local, high-definition IP cameras.", "quadrant": "reasoning"}
+{"instruction": "How do I dependency audit sca?", "response": "Use when checking package.json, requirements.txt, and go.mod for known CVEs.", "quadrant": "reasoning"}
+{"instruction": "How do I design system token consolidation?", "response": "Use when standardizing glassmorphism blur levels so background maps stay legible.", "quadrant": "reasoning"}
+{"instruction": "How do I dispatching parallel agents?", "response": "Use when running frontend shader tuning and backend Node proxy upgrades simultaneously.", "quadrant": "reasoning"}
+{"instruction": "How do I dns enumeration?", "response": "Use when auditing DNS records, zone transfers, and misconfigured CNAMEs.", "quadrant": "reasoning"}
+{"instruction": "How do I docker container hardening?", "response": "Use when auditing Dockerfiles for root execution, exposed sockets, and privileged flags.", "quadrant": "reasoning"}
+{"instruction": "How do I docker local deployment pack?", "response": "Use when containerizing the app and local media proxies for consistent performance.", "quadrant": "reasoning"}
+{"instruction": "How do I dynamic fog and atmosphere clear?", "response": "Use when stripping haze, Rayleigh scattering, and atmospheric fog at low altitudes for sharper ground views.", "quadrant": "reasoning"}
+{"instruction": "How do I edge ai worker offloading?", "response": "Use when moving heavy canvas pixel manipulation off the main UI thread into Web Workers.", "quadrant": "reasoning"}
+{"instruction": "How do I elevation clamping fix?", "response": "Use when preventing camera markers and viewshed polygons from clipping underground.", "quadrant": "reasoning"}
+{"instruction": "How do I email arc chain verifier?", "response": "Use when inspects Authenticated Received Chain (ARC) headers across mailing lists and forwarders.", "quadrant": "reasoning"}
+{"instruction": "How do I email attachment static triage?", "response": "Use when inspects .docm, .xlsm, .pdf, and .zip attachments with oletools and exiftool.", "quadrant": "reasoning"}
+{"instruction": "How do I email basic auth deprecation?", "response": "Use when audits M365/Google Workspace tenants to ensure legacy IMAP/SMTP basic auth is disabled.", "quadrant": "reasoning"}
+{"instruction": "How do I email bec keyword classifier?", "response": "Use when builds local NLP rules to flag Business Email Compromise urgency patterns.", "quadrant": "reasoning"}
+{"instruction": "How do I email bimi check?", "response": "Use when verifies Brand Indicators for Message Identification (BIMI) SVG and VMC certificates.", "quadrant": "reasoning"}
+{"instruction": "How do I email bounce backscatter check?", "response": "Use when audits mail gateways against NDR backscatter spam amplification.", "quadrant": "reasoning"}
+{"instruction": "How do I email breach hibp check?", "response": "Use when queries authorized Have I Been Pwned APIs to flag compromised employee accounts.", "quadrant": "reasoning"}
+{"instruction": "How do I email calendar ics inspector?", "response": "Use when checks .ics calendar invites for malicious links and metadata leaks.", "quadrant": "reasoning"}
+{"instruction": "How do I email canary token setup?", "response": "Use when deploys honeypot email addresses to detect unauthorized database scraping.", "quadrant": "reasoning"}
+{"instruction": "How do I email dane tlsa check?", "response": "Use when audits DNSSEC and TLSA records for SMTP server certificate pinning.", "quadrant": "reasoning"}
+{"instruction": "How do I email dehashed osint?", "response": "Use when automates authorized credential-leak auditing for corporate domain exposure.", "quadrant": "reasoning"}
+{"instruction": "How do I email disposable domain blocker?", "response": "Use when validates user registration flows against disposable/burner email providers.", "quadrant": "reasoning"}
+{"instruction": "How do I email dkim key rotation audit?", "response": "Use when flags stale DKIM keys older than 180-365 days.", "quadrant": "reasoning"}
+{"instruction": "How do I email dkim replay assessment?", "response": "Use when evaluates third-party ESP configurations against DKIM replay abuse.", "quadrant": "reasoning"}
+{"instruction": "How do I email dkim validator?", "response": "Use when queries common DKIM selectors and validates RSA/Ed25519 key lengths.", "quadrant": "reasoning"}
+{"instruction": "How do I email dmarc enforcer?", "response": "Use when audits _dmarc records and generates strict p=reject rollout policies.", "quadrant": "reasoning"}
+{"instruction": "How do I email dmarc rua parser?", "response": "Use when parses XML DMARC aggregate reports to identify unauthorized sending IPs.", "quadrant": "reasoning"}
+{"instruction": "How do I email dmarc ruf forensics?", "response": "Use when analyzes DMARC failure reports to pinpoint active spoofing campaigns.", "quadrant": "reasoning"}
+{"instruction": "How do I email ews autodiscover audit?", "response": "Use when audits Microsoft Exchange Autodiscover and EWS endpoints for credential leaks.", "quadrant": "reasoning"}
+{"instruction": "How do I email format predictor?", "response": "Use when infers corporate email naming conventions (first.last@, flast@) from public sources.", "quadrant": "reasoning"}
+{"instruction": "How do I email forwarding rule audit?", "response": "Use when scans mailbox configs for unauthorized external auto-forwarding rules (BEC persistence).", "quadrant": "reasoning"}
+{"instruction": "How do I email git commit extractor?", "response": "Use when scans public Git commit logs for developer email addresses and internal domains.", "quadrant": "reasoning"}
+{"instruction": "How do I email gravatar hash recon?", "response": "Use when checks MD5/SHA256 email hashes against Gravatar for associated avatars and profiles.", "quadrant": "reasoning"}
+{"instruction": "How do I email harvest theharvester?", "response": "Use when automates theHarvester during authorized engagements to map indexed corporate emails.", "quadrant": "reasoning"}
+{"instruction": "How do I email header forensics?", "response": "Use when parses raw .eml headers to trace Received: hops and detect spoofed senders.", "quadrant": "reasoning"}
+{"instruction": "How do I email header injection fuzz?", "response": "Use when audits web contact forms for CRLF header injection (\\r\\nBcc:).", "quadrant": "reasoning"}
+{"instruction": "How do I email homograph hunter?", "response": "Use when generates and checks Punycode/IDN lookalike domains used in spear-phishing.", "quadrant": "reasoning"}
+{"instruction": "How do I email html smuggling check?", "response": "Use when detects base64/JavaScript payload assembly hidden inside HTML email attachments.", "quadrant": "reasoning"}
+{"instruction": "How do I email imap pop3 tls audit?", "response": "Use when checks legacy mail ports (110, 143, 993, 995) for weak ciphers and plaintext auth.", "quadrant": "reasoning"}
+{"instruction": "How do I email inbox rule anomaly?", "response": "Use when detects suspicious mail rules that auto-delete messages containing invoice or wire.", "quadrant": "reasoning"}
+{"instruction": "How do I email incident containment?", "response": "Use when automates message-trace quarantine and session revocation workflows after phishing.", "quadrant": "reasoning"}
+{"instruction": "How do I email ioc extractor?", "response": "Use when automatically extracts sender IPs, domains, hashes, and URLs from .eml files.", "quadrant": "reasoning"}
+{"instruction": "How do I email iso lnk inspector?", "response": "Use when analyzes container attachments (.iso, .img, .lnk) used to bypass Mark-of-the-Web.", "quadrant": "reasoning"}
+{"instruction": "How do I email listserv misconfig?", "response": "Use when tests internal distribution lists (all@, finance@) for unauthorized external posting.", "quadrant": "reasoning"}
+{"instruction": "How do I email macro deobfuscator?", "response": "Use when extracts and analyzes malicious VBA macros from suspicious Office attachments.", "quadrant": "reasoning"}
+{"instruction": "How do I email mime boundary confusion?", "response": "Use when tests secure email gateways against malformed MIME boundary bypasses.", "quadrant": "reasoning"}
+{"instruction": "How do I email mta sts audit?", "response": "Use when checks Mail Transfer Agent Strict Transport Security policies to prevent TLS downgrade attacks.", "quadrant": "reasoning"}
+{"instruction": "How do I email mx record mapper?", "response": "Use when enumerates MX records to identify third-party mail gateways (Proofpoint, Mimecast, Google).", "quadrant": "reasoning"}
+{"instruction": "How do I email oauth consent phish check?", "response": "Use when audits mail-read OAuth permissions granted to third-party apps.", "quadrant": "reasoning"}
+{"instruction": "How do I email open relay check?", "response": "Use when verifies that internal SMTP servers cannot be abused as unauthorized open relays.", "quadrant": "reasoning"}
+{"instruction": "How do I email password reset poisoning?", "response": "Use when tests password reset flows for Host header poisoning in reset links.", "quadrant": "reasoning"}
+{"instruction": "How do I email paste site monitor?", "response": "Use when scans public paste sites for leaked corporate email dumps.", "quadrant": "reasoning"}
+{"instruction": "How do I email pgp keyserver osint?", "response": "Use when queries public PGP keyservers (keys.openpgp.org) for target email addresses and identities.", "quadrant": "reasoning"}
+{"instruction": "How do I email phishing link sandbox?", "response": "Use when detonates suspicious email URLs inside headless, isolated browser containers.", "quadrant": "reasoning"}
+{"instruction": "How do I email phishing sim builder?", "response": "Use when generates authorized internal security-awareness phishing templates.", "quadrant": "reasoning"}
+{"instruction": "How do I email plus addressing abuse?", "response": "Use when tests web apps for account-limit bypasses using user+1@domain.com aliases.", "quadrant": "reasoning"}
+{"instruction": "How do I email qr quishing decoder?", "response": "Use when extracts and scans embedded QR codes inside phishing emails (zbarimg).", "quadrant": "reasoning"}
+{"instruction": "How do I email rate limit flood test?", "response": "Use when verifies registration and reset endpoints block email-bombing abuse.", "quadrant": "reasoning"}
+{"instruction": "How do I email redirect chain tracer?", "response": "Use when follows shortened links and open-redirect hops in phishing emails safely.", "quadrant": "reasoning"}
+{"instruction": "How do I email return path mismatch?", "response": "Use when flags discrepancies between From:, Reply-To:, and Return-Path: headers.", "quadrant": "reasoning"}
+{"instruction": "How do I email saml nameid mismatch?", "response": "Use when verifies SSO identity providers match verified email claims safely.", "quadrant": "reasoning"}
+{"instruction": "How do I email smtp vrfy audit?", "response": "Use when tests mail servers for exposed VRFY, EXPN, and RCPT TO user enumeration.", "quadrant": "reasoning"}
+{"instruction": "How do I email spf audit?", "response": "Use when inspects SPF DNS TXT records for overly permissive +all or ?all mechanisms.", "quadrant": "reasoning"}
+{"instruction": "How do I email spf lookup counter?", "response": "Use when counts nested DNS lookups in SPF records to prevent exceeding the 10-lookup RFC limit.", "quadrant": "reasoning"}
+{"instruction": "How do I email subaddress leak audit?", "response": "Use when checks if internal ticketing systems expose private support addresses in headers.", "quadrant": "reasoning"}
+{"instruction": "How do I email subdomain mail audit?", "response": "Use when audits parked and forgotten subdomains to ensure they have v=spf1 -all and p=reject.", "quadrant": "reasoning"}
+{"instruction": "How do I email template ssti audit?", "response": "Use when checks transactional email generators for Server-Side Template Injection.", "quadrant": "reasoning"}
+{"instruction": "How do I email tls rpt setup?", "response": "Use when configures SMTP TLS Reporting (_smtp._tls) to monitor transport encryption failures.", "quadrant": "reasoning"}
+{"instruction": "How do I email tracking pixel detector?", "response": "Use when strips hidden 1x1 web beacons and read-receipt trackers from HTML emails.", "quadrant": "reasoning"}
+{"instruction": "How do I email typosquat monitor?", "response": "Use when uses dnstwist to detect newly registered lookalike phishing domains.", "quadrant": "reasoning"}
+{"instruction": "How do I email unicode normalization bug?", "response": "Use when tests authentication forms for Unicode case-folding collisions (e.g., Turkish i).", "quadrant": "reasoning"}
+{"instruction": "How do I email verification token entropy?", "response": "Use when audits email confirmation links for predictable tokens or missing expiration.", "quadrant": "reasoning"}
+{"instruction": "How do I email x originating ip strip?", "response": "Use when verifies outbound mail servers strip internal client IP headers.", "quadrant": "reasoning"}
+{"instruction": "How do I email xss in webmail sanitize?", "response": "Use when audits custom webmail/ticketing clients for HTML/CSS XSS sanitization flaws.", "quadrant": "reasoning"}
+{"instruction": "How do I email zero width watermark check?", "response": "Use when detects hidden zero-width Unicode characters used to trace leaked emails.", "quadrant": "reasoning"}
+{"instruction": "How do I email zoho workspace posture?", "response": "Use when audits domain mail posture across Google Workspace, M365, and Zoho Mail.", "quadrant": "reasoning"}
+{"instruction": "How do I env secret and key validator?", "response": "Use when verifying Google Maps, Cesium Ion, and NASA API keys on startup with clear diagnostics.", "quadrant": "reasoning"}
+{"instruction": "How do I error recovery?", "response": "Use when recovering from tool failures by changing strategy instead of repeating.", "quadrant": "reasoning"}
+{"instruction": "How do I evidence based promotion?", "response": "Use when promoting changes only after tests and verification pass.", "quadrant": "reasoning"}
+{"instruction": "How do I ffmpeg proxy transcoder?", "response": "Use when configuring the Node.js proxy to transcode legacy MJPEG/RTSP feeds into crisp H.264 streams.", "quadrant": "reasoning"}
+{"instruction": "How do I file upload bypass?", "response": "Use when testing MIME-type validation, double extensions, and magic-byte upload filters.", "quadrant": "reasoning"}
+{"instruction": "How do I first principles decomposition?", "response": "Use when stripping a problem to fundamental constraints before choosing frameworks.", "quadrant": "reasoning"}
+{"instruction": "How do I frontend design?", "response": "Use when building clean, high-contrast tactical UI and layout clarity.", "quadrant": "reasoning"}
+{"instruction": "How do I geojson spatial indexing rtree?", "response": "Use when using RBush spatial indexing so dense camera and sensor layers render at 60 FPS.", "quadrant": "reasoning"}
+{"instruction": "How do I geostationary overlay blending?", "response": "Use when improving alpha blending and contrast on NASA/NOAA weather cloud layers.", "quadrant": "reasoning"}
+{"instruction": "How do I github actions hardening?", "response": "Use when auditing CI/CD workflows for pull_request_target script injection and unpinned actions.", "quadrant": "reasoning"}
+{"instruction": "How do I github dorking?", "response": "Use when scanning public repositories and commit histories for leaked keys and internal endpoints.", "quadrant": "reasoning"}
+{"instruction": "How do I glsl bilateral denoise shader?", "response": "Use when removing JPEG compression artifacts and mosquito noise from low-bitrate CCTV feeds.", "quadrant": "reasoning"}
+{"instruction": "How do I glsl cas contrast adaptive sharpening?", "response": "Use when implementing AMD FidelityFX-style Contrast Adaptive Sharpening in WebGL.", "quadrant": "reasoning"}
+{"instruction": "How do I glsl chromatic aberration removal?", "response": "Use when cleaning up color fringing on cheap municipal camera lenses.", "quadrant": "reasoning"}
+{"instruction": "How do I glsl clahe local contrast?", "response": "Use when applying adaptive histogram equalization to reveal details in dark shadows or blown-out highlights.", "quadrant": "reasoning"}
+{"instruction": "How do I glsl crt scanline bypass?", "response": "Use when allowing crisp 1:1 pixel bypass on camera popups while keeping CRT aesthetics on the globe HUD.", "quadrant": "reasoning"}
+{"instruction": "How do I glsl de haze atmospheric filter?", "response": "Use when implementing dark-channel prior dehazing for foggy street cameras and aerial imagery.", "quadrant": "reasoning"}
+{"instruction": "How do I glsl edge enhancement sobel?", "response": "Use when overlaying subtle Sobel edge detection to highlight building footprints and roads.", "quadrant": "reasoning"}
+{"instruction": "How do I glsl gamma exposure balancer?", "response": "Use when adding real-time brightness, gamma, and saturation controls per feed.", "quadrant": "reasoning"}
+{"instruction": "How do I glsl nvg phosphor grain control?", "response": "Use when adding a slider to reduce scanline and phosphor noise in Night Vision mode.", "quadrant": "reasoning"}
+{"instruction": "How do I glsl thermal flir palette tuning?", "response": "Use when refining false-color thermal/FLIR shaders so edges remain legible rather than muddy.", "quadrant": "reasoning"}
+{"instruction": "How do I glsl unsharp mask filter?", "response": "Use when writing a custom Cesium PostProcessStage unsharp mask to crisp up blurry satellite tiles.", "quadrant": "reasoning"}
+{"instruction": "How do I goal drift prevention?", "response": "Use when re-anchoring to the original user goal after chasing nested errors.", "quadrant": "reasoning"}
+{"instruction": "How do I Active Zoom and Crop (Foveated Inference)?", "response": "Use when fast low-res detection must trigger SR + high-res detection on candidate regions.", "quadrant": "reasoning"}
+{"instruction": "How do I Anomaly / Loitering Detection?", "response": "Use when stopped vehicles in live lanes or unusual pedestrian movement must be flagged.", "quadrant": "reasoning"}
+{"instruction": "How do I AOD Net?", "response": "Use when end-to-end lightweight CNN dehazing is needed for real-time video.", "quadrant": "reasoning"}
+{"instruction": "How do I Atmospheric Turbulence Mitigation?", "response": "Use when heat-haze shimmer over hot asphalt must be corrected.", "quadrant": "reasoning"}
+{"instruction": "How do I Auto Camera Pose Estimation (PnP / PnL)?", "response": "Use when live 2D CCTV feeds must be aligned onto 3D building geometry.", "quadrant": "reasoning"}
+{"instruction": "How do I Auto Gain Control (AGC) Normalization?", "response": "Use when sudden brightness flicker from clouds must be prevented.", "quadrant": "reasoning"}
+{"instruction": "How do I Background Subtraction (MOG2 / KNN)?", "response": "Use when moving foreground blobs must be isolated on static cameras.", "quadrant": "reasoning"}
+{"instruction": "How do I Backlight Compensation (BLC)?", "response": "Use when foreground must be boosted facing low-angle sun.", "quadrant": "reasoning"}
+{"instruction": "How do I BasicVSR++?", "response": "Use when bidirectional propagation across adjacent CCTV frames must upscale moving vehicles.", "quadrant": "reasoning"}
+{"instruction": "How do I Bicubic Interpolation?", "response": "Use when a fast baseline geometric upsampling is needed before neural refinement.", "quadrant": "reasoning"}
+{"instruction": "How do I Bilateral Filtering?", "response": "Use when flat road surfaces must be cleaned without blurring pedestrians.", "quadrant": "reasoning"}
+{"instruction": "How do I Blind Super Resolution (BSRGAN)?", "response": "Use when unknown compression artifacts and sensor blur kernels must be handled.", "quadrant": "reasoning"}
+{"instruction": "How do I BM3D (Block Matching and 3D Filtering)?", "response": "Use when a gold-standard classical sparse-domain denoiser is required.", "quadrant": "reasoning"}
+{"instruction": "How do I BoT SORT?", "response": "Use when motion Kalman + appearance Re-ID must persist vehicle tracking.", "quadrant": "reasoning"}
+{"instruction": "How do I ByteTrack?", "response": "Use when low-confidence detections must be associated to track occluded pedestrians.", "quadrant": "reasoning"}
+{"instruction": "How do I Camera Intrinsic Calibration & Lens Undistortion?", "response": "Use when barrel/pincushion distortion from fisheye lenses must be removed.", "quadrant": "reasoning"}
+{"instruction": "How do I Chroma Subsampling Reconstruction (4:2:0 to 4:4:4)?", "response": "Use when color sharpness on small colored vehicles must be restored.", "quadrant": "reasoning"}
+{"instruction": "How do I Cirrus Cloud & Haze Removal (Satellite)?", "response": "Use when thin clouds over roads must be cleared via spectral subtraction.", "quadrant": "reasoning"}
+{"instruction": "How do I CLAHE?", "response": "Use when local contrast in shadows must be boosted without blowing out headlights.", "quadrant": "reasoning"}
+{"instruction": "How do I Color Constancy (Gray World / White Patch)?", "response": "Use when sodium-vapor casts must be corrected for car color ID.", "quadrant": "reasoning"}
+{"instruction": "How do I Crowd Density Estimation (CSRNet)?", "response": "Use when heatmaps must count humans in dense gatherings.", "quadrant": "reasoning"}
+{"instruction": "How do I Dark Channel Prior (DCP) Dehazing?", "response": "Use when atmospheric transmission must be estimated to strip fog/smog.", "quadrant": "reasoning"}
+{"instruction": "How do I DeblurGAN v2?", "response": "Use when real-time blind motion deblurring must freeze moving vehicles.", "quadrant": "reasoning"}
+{"instruction": "How do I DeepSORT?", "response": "Use when appearance embeddings must maintain IDs after occlusion.", "quadrant": "reasoning"}
+{"instruction": "How do I Dense Optical Flow (RAFT / Farnebäck)?", "response": "Use when per-pixel motion vectors must spot moving objects even when camouflaged.", "quadrant": "reasoning"}
+{"instruction": "How do I Deraining Networks (PReNet / MPRNet)?", "response": "Use when rain streaks that trigger false pedestrian detections must be removed.", "quadrant": "reasoning"}
+{"instruction": "How do I Deringing / Mosquito Noise Suppression?", "response": "Use when ringing artifacts around high-contrast car silhouettes must be removed.", "quadrant": "reasoning"}
+{"instruction": "How do I Desnowing (DesnowNet)?", "response": "Use when airborne snowflakes and ground glare must be filtered.", "quadrant": "reasoning"}
+{"instruction": "How do I DnCNN?", "response": "Use when residual learning CNN must remove blind Gaussian noise from feeds.", "quadrant": "reasoning"}
+{"instruction": "How do I Dust/Sandstorm Color Restoration?", "response": "Use when red-shifted atmospheric scattering must be balanced.", "quadrant": "reasoning"}
+{"instruction": "How do I Edge Guided Proposal Refinement?", "response": "Use when loose boxes must be snapped onto vehicle chassis edges.", "quadrant": "reasoning"}
+{"instruction": "How do I EDSR (Enhanced Deep Super Resolution)?", "response": "Use when deep residual super-resolution must sharpen vehicle edges without batch-norm artifacts.", "quadrant": "reasoning"}
+{"instruction": "How do I EDVR?", "response": "Use when deformable convolution alignment must upscale multi-frame video of moving cars.", "quadrant": "reasoning"}
+{"instruction": "How do I EnlightenGAN?", "response": "Use when unpaired low-light enhancement must preserve natural night textures.", "quadrant": "reasoning"}
+{"instruction": "How do I Epipolar Geometry Matching?", "response": "Use when the same car/person must be cross-referenced across overlapping cameras.", "quadrant": "reasoning"}
+{"instruction": "How do I ESRGAN Lite?", "response": "Use when pruned generator weights must run super-resolution in browser/WebGPU.", "quadrant": "reasoning"}
+{"instruction": "How do I Fine Grained Vehicle Classification?", "response": "Use when sedans, SUVs, vans, trucks, buses, motorcycles must be distinguished.", "quadrant": "reasoning"}
+{"instruction": "How do I Frequency Domain Upscaling (FFT Zero Padding)?", "response": "Use when periodic structures like crosswalks and roofs must be preserved during zoom.", "quadrant": "reasoning"}
+{"instruction": "How do I Gamma Correction (Adaptive)?", "response": "Use when non-linear luminance mapping must be tuned per frame histogram.", "quadrant": "reasoning"}
+{"instruction": "How do I Guided Image Filtering?", "response": "Use when fast linear-time edge-preserving smoothing is needed.", "quadrant": "reasoning"}
+{"instruction": "How do I Headlight Glare / Bloom Suppression?", "response": "Use when saturated specular highlights from car headlights must be masked.", "quadrant": "reasoning"}
+{"instruction": "How do I High Boost Filtering?", "response": "Use when high-frequency edge details must be amplified while retaining luminance.", "quadrant": "reasoning"}
+{"instruction": "How do I Histogram Matching?", "response": "Use when exposure must be normalized across stitched tiles/cameras.", "quadrant": "reasoning"}
+{"instruction": "How do I Hot/Dead Pixel Inpainting?", "response": "Use when stuck CMOS sensor pixels must be detected and interpolated.", "quadrant": "reasoning"}
+{"instruction": "How do I Human Pose Estimation (RTMPose / OpenPose)?", "response": "Use when skeletal keypoints must confirm human presence under partial occlusion.", "quadrant": "reasoning"}
+{"instruction": "How do I Image Stitching & Seamless Blending (Multi Band)?", "response": "Use when overlapping camera FOVs must be merged without seams.", "quadrant": "reasoning"}
+{"instruction": "How do I JPEG/H.264 Deblocking Filter?", "response": "Use when 8x8/16x16 macroblock boundaries must be smoothed in low-bitrate streams.", "quadrant": "reasoning"}
+{"instruction": "How do I Lanczos 3 Resampling?", "response": "Use when sinc-based windowing must minimize aliasing during zoom.", "quadrant": "reasoning"}
+{"instruction": "How do I Laplacian Sharpening?", "response": "Use when rapid intensity transitions must be highlighted.", "quadrant": "reasoning"}
+{"instruction": "How do I Latent Diffusion Upscaling (Tile based)?", "response": "Use when plausible micro-textures must be hallucinated on ultra-low-res aerial tiles.", "quadrant": "reasoning"}
+{"instruction": "How do I Local Laplacian Filtering?", "response": "Use when multi-scale contrast must be manipulated without halos.", "quadrant": "reasoning"}
+{"instruction": "How do I Mask R CNN / YOLOv8 Seg?", "response": "Use when pixel-accurate instance segmentation must separate overlapping pedestrians/vehicles.", "quadrant": "reasoning"}
+{"instruction": "How do I Median Filtering?", "response": "Use when salt-and-pepper impulse noise must be removed from analog/wireless feeds.", "quadrant": "reasoning"}
+{"instruction": "How do I Metric Scale Estimation?", "response": "Use when pixel dimensions must be mapped to real-world meters.", "quadrant": "reasoning"}
+{"instruction": "How do I MPRNet (Multi Stage Progressive Restoration)?", "response": "Use when blurry moving objects must be progressively sharpened.", "quadrant": "reasoning"}
+{"instruction": "How do I Multi Frame Burst Super Resolution?", "response": "Use when sub-pixel camera jitter across frames must be fused into higher resolution.", "quadrant": "reasoning"}
+{"instruction": "How do I NAFNet?", "response": "Use when a fast activation-free network must restore and denoise imagery.", "quadrant": "reasoning"}
+{"instruction": "How do I Non Local Means (NLM) Denoising?", "response": "Use when similar patches must be averaged while keeping edges intact.", "quadrant": "reasoning"}
+{"instruction": "How do I Optical Flow Motion Deblurring?", "response": "Use when vehicle velocity vectors must be estimated to invert directional motion blur.", "quadrant": "reasoning"}
+{"instruction": "How do I Oriented Bounding Boxes (OBB / Rotated YOLO)?", "response": "Use when angled boxes must fit diagonally parked/turning cars.", "quadrant": "reasoning"}
+{"instruction": "How do I Orthorectification?", "response": "Use when terrain tilt and relief displacement must be removed from oblique aerial imagery.", "quadrant": "reasoning"}
+{"instruction": "How do I Pansharpening (Brovey / Gram Schmidt / PanNet)?", "response": "Use when high-res panchromatic bands must be fused with lower-res RGB bands.", "quadrant": "reasoning"}
+{"instruction": "How do I Perspective / Homography Warping (Bird's Eye View)?", "response": "Use when angled traffic cameras must be projected onto top-down ground planes.", "quadrant": "reasoning"}
+{"instruction": "How do I Polarization Simulated Glare Reduction?", "response": "Use when contrast through windshield glass must be enhanced.", "quadrant": "reasoning"}
+{"instruction": "How do I Pseudo Thermal / False Color Mapping?", "response": "Use when intensity gradients must be mapped to high-visibility LUTs.", "quadrant": "reasoning"}
+{"instruction": "How do I RCAN (Residual Channel Attention Networks)?", "response": "Use when channel attention must focus compute on high-frequency textures like grilles and limbs.", "quadrant": "reasoning"}
+{"instruction": "How do I Real ESRGAN?", "response": "Use when upscaling real-world degraded surveillance footage to recover recognizable cars and pedestrians.", "quadrant": "reasoning"}
+{"instruction": "How do I Restormer?", "response": "Use when a transformer must remove rain and noise on high-resolution imagery.", "quadrant": "reasoning"}
+{"instruction": "How do I RetinexNet / MSRCR?", "response": "Use when illumination must be separated from reflectance to reveal shadowed objects.", "quadrant": "reasoning"}
+{"instruction": "How do I Richardson Lucy Deconvolution?", "response": "Use when iterative Bayesian restoration must fix optical lens defocus.", "quadrant": "reasoning"}
+{"instruction": "How do I Rolling Shutter Rectification?", "response": "Use when CMOS line-by-line readout skew on fast cars must be corrected.", "quadrant": "reasoning"}
+{"instruction": "How do I RT DETR?", "response": "Use when transformer detection must eliminate NMS in dense crowds.", "quadrant": "reasoning"}
+{"instruction": "How do I S Curve Contrast Stretching?", "response": "Use when mid-tone separation must be expanded.", "quadrant": "reasoning"}
+{"instruction": "How do I SAHI (Slicing Aided Hyper Inference)?", "response": "Use when high-res aerial/4K images must be tiled so tiny humans aren't lost.", "quadrant": "reasoning"}
+{"instruction": "How do I SAM 2?", "response": "Use when zero-shot promptable segmentation and video mask propagation is needed.", "quadrant": "reasoning"}
+{"instruction": "How do I Shadow Detection & Illumination Recovery?", "response": "Use when cast building shadows must be normalized.", "quadrant": "reasoning"}
+{"instruction": "How do I Shock Filters?", "response": "Use when PDE-based morphological sharpening must turn blurry ramps into crisp step edges.", "quadrant": "reasoning"}
+{"instruction": "How do I Single Image HDR Tone Mapping (Reinhard/Drago)?", "response": "Use when extreme dynamic range must be compressed.", "quadrant": "reasoning"}
+{"instruction": "How do I Soft NMS / Weighted Boxes Fusion (WBF)?", "response": "Use when overlapping boxes in dense traffic must be merged without suppressing adjacent pedestrians.", "quadrant": "reasoning"}
+{"instruction": "How do I SRCNN?", "response": "Use when a lightweight 3-layer CNN must super-resolve real-time edge streams.", "quadrant": "reasoning"}
+{"instruction": "How do I Sub Pixel Convolution (ESPCN)?", "response": "Use when pixel-shuffling must deliver low-latency 2x-4x zoom.", "quadrant": "reasoning"}
+{"instruction": "How do I Sub Pixel Image Registration?", "response": "Use when multi-temporal frames must be aligned to detect parked/departed vehicles.", "quadrant": "reasoning"}
+{"instruction": "How do I Sun Glint Removal?", "response": "Use when specular solar reflections off windshields/pavement must be suppressed.", "quadrant": "reasoning"}
+{"instruction": "How do I SwinIR?", "response": "Use when transformer-based image restoration must recover high-frequency detail from CCTV and aerial tiles.", "quadrant": "reasoning"}
+{"instruction": "How do I Temporal Frame Averaging?", "response": "Use when static background pixels must be averaged to drop the noise floor.", "quadrant": "reasoning"}
+{"instruction": "How do I Temporal Frame Interpolation (RIFE)?", "response": "Use when choppy 1-5 FPS public feeds must be smoothed.", "quadrant": "reasoning"}
+{"instruction": "How do I TensorRT / ONNX FP16/INT8 Quantization?", "response": "Use when vision models must be compiled for 3x-5x faster real-time FPS.", "quadrant": "reasoning"}
+{"instruction": "How do I Total Variation (TV) Denoising?", "response": "Use when image gradient variation must be minimized while preserving sharp boundaries.", "quadrant": "reasoning"}
+{"instruction": "How do I Trajectory Prediction (Social LSTM / Kalman)?", "response": "Use when future car/pedestrian motion must be forecast during frame drops.", "quadrant": "reasoning"}
+{"instruction": "How do I Unsharp Masking?", "response": "Use when local edge acutance must be enhanced.", "quadrant": "reasoning"}
+{"instruction": "How do I Vanishing Point Detection?", "response": "Use when road plane orientation and scale must be auto-calibrated.", "quadrant": "reasoning"}
+{"instruction": "How do I Vehicle Attribute Recognition?", "response": "Use when color, orientation, and brake-light state must be extracted.", "quadrant": "reasoning"}
+{"instruction": "How do I Video Stabilization (Homography / RANSAC)?", "response": "Use when wind-induced pole shake on elevated cameras must be removed.", "quadrant": "reasoning"}
+{"instruction": "How do I Vignetting Correction?", "response": "Use when radial brightness falloff near lens edges must be compensated.", "quadrant": "reasoning"}
+{"instruction": "How do I Wavelet Thresholding (VisuShrink/BayesShrink)?", "response": "Use when high-frequency sensor noise must be stripped across wavelet sub-bands.", "quadrant": "reasoning"}
+{"instruction": "How do I WebGPU / ONNX Runtime Web Inference?", "response": "Use when lightweight YOLO + CLAHE shaders must run in-browser globes.", "quadrant": "reasoning"}
+{"instruction": "How do I Water/Snow Wet Road Reflection Suppression?", "response": "Use when real vehicles must be separated from inverted reflections.", "quadrant": "reasoning"}
+{"instruction": "How do I Wiener Deconvolution?", "response": "Use when frequency-domain inverse filtering with an estimated PSF is needed.", "quadrant": "reasoning"}
+{"instruction": "How do I YOLOv11 / YOLOv8 (Small Object Tuned)?", "response": "Use when high-speed real-time detection must find tiny aerial pedestrians.", "quadrant": "reasoning"}
+{"instruction": "How do I Zero DCE?", "response": "Use when lightweight neural light-enhancement must brighten dark night CCTV.", "quadrant": "reasoning"}
+{"instruction": "How do I google 3d tiles integration?", "response": "Use when configuring and optimizing Google Photorealistic 3D Tiles API quotas and fallback handling.", "quadrant": "reasoning"}
+{"instruction": "How do I graphql introspection audit?", "response": "Use when testing GraphQL schemas for introspection leaks, batching attacks, and depth limits.", "quadrant": "reasoning"}
+{"instruction": "How do I grpc protobuf audit?", "response": "Use when inspecting gRPC services for missing authentication and reflection exposure.", "quadrant": "reasoning"}
+{"instruction": "How do I hashcat rule crafting?", "response": "Use when designing password policy audit masks and rulesets to test credential strength.", "quadrant": "reasoning"}
+{"instruction": "How do I hdr tone mapping adjustment?", "response": "Use when tuning Cesium HDR exposure so sunlit terrain doesn't clip to white.", "quadrant": "reasoning"}
+{"instruction": "How do I hls adaptive bitrate lock?", "response": "Use when forcing hls.js players to lock onto the highest available resolution variant instead of auto-downgrading.", "quadrant": "reasoning"}
+{"instruction": "How do I horizon leveling auto rotate?", "response": "Use when automatically leveling tilted camera streams using vanishing-point detection.", "quadrant": "reasoning"}
+{"instruction": "How do I http request smuggling?", "response": "Use when detecting CL.TE and TE.CL desynchronization between proxies and backends.", "quadrant": "reasoning"}
+{"instruction": "How do I hud declutter minimal mode?", "response": "Use when creating a one-click 'Clean Optics' toggle that hides all reticles, grids, and labels.", "quadrant": "reasoning"}
+{"instruction": "How do I hypothesis testing?", "response": "Use when listing and testing root-cause hypotheses ranked by probability.", "quadrant": "reasoning"}
+{"instruction": "How do I idor access control?", "response": "Use when identifying Insecure Direct Object References and broken access controls.", "quadrant": "reasoning"}
+{"instruction": "How do I improve ui?", "response": "Use when auditing visual clutter and streamlining overlapping HUD reticles, labels, and telemetry boxes.", "quadrant": "reasoning"}
+{"instruction": "How do I incident response playbook?", "response": "Use when running step-by-step containment, eradication, and forensic triage workflows.", "quadrant": "reasoning"}
+{"instruction": "How do I insecure deserialization?", "response": "Use when auditing serialized object handling in Java, PHP, Python, and .NET.", "quadrant": "reasoning"}
+{"instruction": "How do I intent feedback loop?", "response": "Use when using thumbs/edit/retry feedback to refine understanding of user intent.", "quadrant": "reasoning"}
+{"instruction": "How do I intent understanding?", "response": "Use when parsing the user's true goal, constraints, and desired output format before acting.", "quadrant": "reasoning"}
+{"instruction": "How do I ip abuseipdb reputation?", "response": "Use when checks IP reputation scores and historical abuse reports via AbuseIPDB API.", "quadrant": "reasoning"}
+{"instruction": "How do I ip arp spoof dhcp rogue detect?", "response": "Use when monitors local subnets for duplicate MAC addresses and rogue DHCP servers.", "quadrant": "reasoning"}
+{"instruction": "How do I ip asn bgp mapper?", "response": "Use when maps Autonomous System Numbers (ASNs) and BGP announced prefixes via bgp.he.net/RIPE.", "quadrant": "reasoning"}
+{"instruction": "How do I ip attack surface report?", "response": "Use when aggregates IP, ASN, port, and certificate findings into a prioritized remediation plan.", "quadrant": "reasoning"}
+{"instruction": "How do I ip aws ec2 ip range matcher?", "response": "Use when matches IPs against official AWS, Azure, GCP, and Cloudflare JSON IP ranges.", "quadrant": "reasoning"}
+{"instruction": "How do I ip aws security group auditor?", "response": "Use when flags AWS Security Groups allowing 0.0.0.0/0 on administrative ports.", "quadrant": "reasoning"}
+{"instruction": "How do I ip bgp rpki roa validator?", "response": "Use when checks if an organization's IP prefixes are protected by RPKI Route Origin Authorizations.", "quadrant": "reasoning"}
+{"instruction": "How do I ip censys cert pivot?", "response": "Use when uses Censys SSL/TLS certificate transparency data to find origin IPs behind CDNs.", "quadrant": "reasoning"}
+{"instruction": "How do I ip cloudflare origin finder?", "response": "Use when checks historical DNS (SecurityTrails), MX records, and SSL certs to spot origin IP leaks.", "quadrant": "reasoning"}
+{"instruction": "How do I ip dns recursion amp check?", "response": "Use when verifies DNS servers are not open resolvers vulnerable to DDoS amplification.", "quadrant": "reasoning"}
+{"instruction": "How do I ip dns zone transfer axfr?", "response": "Use when tests authoritative nameservers for misconfigured AXFR zone transfers (dig axfr).", "quadrant": "reasoning"}
+{"instruction": "How do I ip docker daemon tcp audit?", "response": "Use when checks ports 2375/2376 for unauthenticated exposed Docker API sockets.", "quadrant": "reasoning"}
+{"instruction": "How do I ip fail2ban crowdsec setup?", "response": "Use when generates intrusion-prevention rules to auto-ban brute-forcing IPs.", "quadrant": "reasoning"}
+{"instruction": "How do I ip favicon mmh3 hash recon?", "response": "Use when computes MurmurHash3 of favicon.ico to search Shodan for matching infrastructure.", "quadrant": "reasoning"}
+{"instruction": "How do I ip firewall iptables ufw audit?", "response": "Use when reviews Linux host firewall rules for overly permissive ACCEPT policies.", "quadrant": "reasoning"}
+{"instruction": "How do I ip fofa zoomeye recon?", "response": "Use when correlates multi-engine internet scan data for exposed IoT and edge appliances.", "quadrant": "reasoning"}
+{"instruction": "How do I ip geo blocking policy gen?", "response": "Use when generates firewall/WAF rules to restrict admin panels to approved countries/IPs.", "quadrant": "reasoning"}
+{"instruction": "How do I ip geoip maxmind enrichment?", "response": "Use when enriches IP logs with ASN, country, city, and ISP metadata.", "quadrant": "reasoning"}
+{"instruction": "How do I ip greynoise noise filter?", "response": "Use when distinguishes targeted attacks from benign internet-wide background scanners.", "quadrant": "reasoning"}
+{"instruction": "How do I ip honeypot canary detector?", "response": "Use when identifies telltale signatures of Cowrie, Dionaea, and OpenCanary honeypots.", "quadrant": "reasoning"}
+{"instruction": "How do I ip http title banner grabber?", "response": "Use when uses httpx across IP lists to collect status codes, titles, and tech headers.", "quadrant": "reasoning"}
+{"instruction": "How do I ip http virtual host fuzz?", "response": "Use when fuzzes Host: headers on a raw IP address to uncover hidden virtual hosts (ffuf).", "quadrant": "reasoning"}
+{"instruction": "How do I ip icmp traceroute topology?", "response": "Use when maps network hops, firewalls, and packet filtering behavior via mtr/traceroute.", "quadrant": "reasoning"}
+{"instruction": "How do I ip iot ot shodan exposure?", "response": "Use when audits industrial protocols (Modbus 502, BACnet 47808) for accidental internet exposure.", "quadrant": "reasoning"}
+{"instruction": "How do I ip ipv6 dual stack audit?", "response": "Use when scans AAAA records and IPv6 addresses to catch firewall rules only applied to IPv4.", "quadrant": "reasoning"}
+{"instruction": "How do I ip kubelet api exposure?", "response": "Use when scans ports 10250 and 6443 for unauthenticated Kubernetes Kubelet endpoints.", "quadrant": "reasoning"}
+{"instruction": "How do I ip masscan fast discovery?", "response": "Use when conducts high-speed port discovery across large authorized /16 or /24 ranges.", "quadrant": "reasoning"}
+{"instruction": "How do I ip mdns llmnr nbtns audit?", "response": "Use when detects noisy local name-resolution protocols vulnerable to Responder poisoning.", "quadrant": "reasoning"}
+{"instruction": "How do I ip memcached redis exposure?", "response": "Use when scans for unauthenticated Redis (6379) and Memcached (11211) instances.", "quadrant": "reasoning"}
+{"instruction": "How do I ip mongodb elastic open check?", "response": "Use when audits ports 27017 and 9200 for unauthenticated database exposure.", "quadrant": "reasoning"}
+{"instruction": "How do I ip nat gateway egress audit?", "response": "Use when verifies outbound traffic routes through controlled NAT gateways with egress filtering.", "quadrant": "reasoning"}
+{"instruction": "How do I ip netflow anomaly detector?", "response": "Use when identifies sudden outbound data spikes and port-scan sweeps in NetFlow logs.", "quadrant": "reasoning"}
+{"instruction": "How do I ip nfs rpcbind export audit?", "response": "Use when checks showmount -e on port 2049 for world-mountable NFS shares.", "quadrant": "reasoning"}
+{"instruction": "How do I ip nginx rate limit by ip?", "response": "Use when configures limit_req_zone rules while safely handling CDN real-IP headers.", "quadrant": "reasoning"}
+{"instruction": "How do I ip nmap syn service scan?", "response": "Use when runs nmap -sV -sC against authorized targets to fingerprint services and versions.", "quadrant": "reasoning"}
+{"instruction": "How do I ip nmap udp top ports?", "response": "Use when scans critical UDP services (53, 69, 123, 161, 500, 1900) often missed by TCP scans.", "quadrant": "reasoning"}
+{"instruction": "How do I ip nmap xml diff tracker?", "response": "Use when compares daily Nmap XML scans (ndiff) to alert when a new port opens unexpectedly.", "quadrant": "reasoning"}
+{"instruction": "How do I ip ntp monlist audit?", "response": "Use when checks UDP 123 for legacy monlist DDoS amplification vulnerabilities.", "quadrant": "reasoning"}
+{"instruction": "How do I ip nuclei cve ip scanner?", "response": "Use when runs targeted Nuclei infrastructure templates against authorized IP lists.", "quadrant": "reasoning"}
+{"instruction": "How do I ip pcap suspicious ip extractor?", "response": "Use when parses .pcap captures with tshark to list top talkers and external C2 IPs.", "quadrant": "reasoning"}
+{"instruction": "How do I ip rdp bluekeep nla check?", "response": "Use when verifies Remote Desktop (3389) enforces Network Level Authentication and isn't public.", "quadrant": "reasoning"}
+{"instruction": "How do I ip reverse dns ptr sweep?", "response": "Use when performs bulk PTR lookups across authorized IP subnets to uncover hostnames.", "quadrant": "reasoning"}
+{"instruction": "How do I ip rsync ftp anonymous check?", "response": "Use when tests ports 873 (rsync) and 21 (FTP) for anonymous read/write access.", "quadrant": "reasoning"}
+{"instruction": "How do I ip rsyslog syslog exposure?", "response": "Use when verifies UDP/TCP 514 log collectors are restricted to internal subnets.", "quadrant": "reasoning"}
+{"instruction": "How do I ip rustscan nmap pipeline?", "response": "Use when chains RustScan port discovery directly into targeted Nmap NSE scripts.", "quadrant": "reasoning"}
+{"instruction": "How do I ip s3 cloud bucket ip pivot?", "response": "Use when correlates cloud endpoint IPs with storage buckets and CDN distributions.", "quadrant": "reasoning"}
+{"instruction": "How do I ip san certificate extractor?", "response": "Use when extracts Subject Alternative Names (SANs) from port 443 to discover co-hosted domains.", "quadrant": "reasoning"}
+{"instruction": "How do I ip shodan host intel?", "response": "Use when queries Shodan API for open ports, banners, CPEs, and known CVEs on target IPs.", "quadrant": "reasoning"}
+{"instruction": "How do I ip sip voip port audit?", "response": "Use when checks ports 5060/5061 for exposed SIP trunks vulnerable to toll fraud.", "quadrant": "reasoning"}
+{"instruction": "How do I ip smb signing enum?", "response": "Use when checks port 445 for SMBv1 exposure, null sessions, and disabled SMB signing.", "quadrant": "reasoning"}
+{"instruction": "How do I ip snmp community audit?", "response": "Use when tests UDP 161 for default public/private SNMPv1/v2c community strings.", "quadrant": "reasoning"}
+{"instruction": "How do I ip ssh algorithm hardening?", "response": "Use when audits SSH banners (ssh-audit) for weak key exchanges, ciphers, and host keys.", "quadrant": "reasoning"}
+{"instruction": "How do I ip ssl tls cipher audit?", "response": "Use when runs testssl.sh / sslyze to detect weak TLS 1.0/1.1, Heartbleed, and expired certs.", "quadrant": "reasoning"}
+{"instruction": "How do I ip ssrf ipv4 bypass generator?", "response": "Use when generates decimal, octal, hex, and IPv6-mapped IP representations to test SSRF filters.", "quadrant": "reasoning"}
+{"instruction": "How do I ip stix taxii ioc exporter?", "response": "Use when exports malicious IP indicators into STIX 2.1 JSON for SIEM ingestion.", "quadrant": "reasoning"}
+{"instruction": "How do I ip subnet cidr calculator?", "response": "Use when splits, merges, and calculates usable host ranges for network segmentation.", "quadrant": "reasoning"}
+{"instruction": "How do I ip tls ja3 ja4 fingerprinter?", "response": "Use when extracts JA3/JA4 TLS client/server fingerprints to identify malware or scanners.", "quadrant": "reasoning"}
+{"instruction": "How do I ip tor exit node check?", "response": "Use when cross-references source IPs against official Tor exit node and public proxy lists.", "quadrant": "reasoning"}
+{"instruction": "How do I ip upnp nat pmp lan scan?", "response": "Use when scans local networks for exposed UPnP port-forwarding gateways.", "quadrant": "reasoning"}
+{"instruction": "How do I ip virustotal passive dns?", "response": "Use when retrieves passive DNS resolutions and malicious URL associations for an IP.", "quadrant": "reasoning"}
+{"instruction": "How do I ip vpn datacenter asn detect?", "response": "Use when flags traffic originating from residential proxies, VPNs, or cloud hosting ASNs.", "quadrant": "reasoning"}
+{"instruction": "How do I ip vpn ike psk audit?", "response": "Use when checks IPsec VPN gateways (UDP 500/4500) for weak IKEv1 Aggressive Mode hashes.", "quadrant": "reasoning"}
+{"instruction": "How do I ip waf cdn fingerprinter?", "response": "Use when runs wafw00f to identify Cloudflare, Akamai, AWS WAF, or Imperva protections.", "quadrant": "reasoning"}
+{"instruction": "How do I ip whois rdap lookup?", "response": "Use when queries RDAP/WHOIS databases for IP block ownership, abuse contacts, and registration dates.", "quadrant": "reasoning"}
+{"instruction": "How do I ip wireguard openvpn hardening?", "response": "Use when audits VPN server port exposure and TLS-auth key configurations.", "quadrant": "reasoning"}
+{"instruction": "How do I ip x forwarded for spoof test?", "response": "Use when tests if backend servers blindly trust X-Forwarded-For or X-Real-IP headers.", "quadrant": "reasoning"}
+{"instruction": "How do I ip zeek conn log analyzer?", "response": "Use when analyzes Zeek conn.log files for long-duration beaconing connections.", "quadrant": "reasoning"}
+{"instruction": "How do I jwt security audit?", "response": "Use when testing JWTs for none algorithm bypass, weak secrets, and kid injection.", "quadrant": "reasoning"}
+{"instruction": "How do I k8s secrets encryption?", "response": "Use when verifying etcd encryption and external secrets operator configurations.", "quadrant": "reasoning"}
+{"instruction": "How do I keyboard shortcut optics preset?", "response": "Use when binding hotkeys to toggle between Daylight Sharp, FLIR, NVG, and Raw Feed modes.", "quadrant": "reasoning"}
+{"instruction": "How do I kubernetes rbac audit?", "response": "Use when reviewing K8s manifests, pod security policies, and cluster-admin bindings.", "quadrant": "reasoning"}
+{"instruction": "How do I label collision and lod declutter?", "response": "Use when preventing thousands of flight/ship labels from overlapping and obscuring ground imagery.", "quadrant": "reasoning"}
+{"instruction": "How do I layer opacity quick sliders?", "response": "Use when adding instant opacity controls for traffic, weather, and radar overlays blocking ground detail.", "quadrant": "reasoning"}
+{"instruction": "How do I lens distortion undistort shader?", "response": "Use when applying barrel/pincushion radial correction to wide-angle fisheye street cameras.", "quadrant": "reasoning"}
+{"instruction": "How do I linux privesc checklist?", "response": "Use when auditing SUID binaries, cron jobs, sudoers, and kernel capabilities.", "quadrant": "reasoning"}
+{"instruction": "How do I llm output xss guard?", "response": "Use when sanitizing Markdown/HTML rendered from LLM responses to prevent XSS.", "quadrant": "reasoning"}
+{"instruction": "How do I llm red teaming?", "response": "Use when testing AI endpoints for jailbreaks, system prompt extraction, and data leakage.", "quadrant": "reasoning"}
+{"instruction": "How do I lockfile integrity check?", "response": "Use when detecting tampered registry URLs or checksum mismatches in lockfiles.", "quadrant": "reasoning"}
+{"instruction": "How do I mass assignment audit?", "response": "Use when checking ORM bindings for over-posting and unauthorized field updates.", "quadrant": "reasoning"}
+{"instruction": "How do I mcp server security audit?", "response": "Use when reviewing MCP servers for command injection and over-privileged tools.", "quadrant": "reasoning"}
+{"instruction": "How do I mcp server tool exposure?", "response": "Use when exposing camera zoom, layer switching, and shader controls as MCP tools for voice/AI control.", "quadrant": "reasoning"}
+{"instruction": "How do I memory safety review?", "response": "Use when auditing C/C++ code for buffer overflows, use-after-free, and integer overflows.", "quadrant": "reasoning"}
+{"instruction": "How do I minimal solution preference?", "response": "Use when preferring the simplest correct solution over over-engineered abstractions.", "quadrant": "reasoning"}
+{"instruction": "How do I mitm arp spoofing lab?", "response": "Use when testing network resilience against ARP spoofing and TLS downgrade attacks.", "quadrant": "reasoning"}
+{"instruction": "How do I motion heatmap overlay?", "response": "Use when aggregating frame-to-frame pixel diffs to visualize traffic flow clearly on low-FPS cameras.", "quadrant": "reasoning"}
+{"instruction": "How do I multi camera pip grid?", "response": "Use when building a sharp, full-resolution picture-in-picture modal for inspecting cameras without HUD distortion.", "quadrant": "reasoning"}
+{"instruction": "How do I multi step planning?", "response": "Use when decomposing complex tasks into ordered, verifiable milestones.", "quadrant": "reasoning"}
+{"instruction": "How do I negative constraint compliance?", "response": "Use when honoring 'do not' constraints and format restrictions reliably.", "quadrant": "reasoning"}
+{"instruction": "How do I night ir camera auto contrast?", "response": "Use when detecting washed-out infrared night feeds and normalizing black/white levels.", "quadrant": "reasoning"}
+{"instruction": "How do I nodejs stream proxy optimizer?", "response": "Use when optimizing the Vite/Node backend to relay image and video streams without re-encoding loss.", "quadrant": "reasoning"}
+{"instruction": "How do I nosqli audit?", "response": "Use when testing MongoDB and document stores for operator and JavaScript injection.", "quadrant": "reasoning"}
+{"instruction": "How do I oauth oidc review?", "response": "Use when auditing OAuth flows for redirect_uri manipulation, state fixation, and token leakage.", "quadrant": "reasoning"}
+{"instruction": "How do I ocr license plate blur compliance?", "response": "Use when maintaining privacy compliance by ensuring upscaling workflows respect anonymization rules.", "quadrant": "reasoning"}
+{"instruction": "How do I offline mbtiles server setup?", "response": "Use when serving local high-res MBTiles/PMTiles for zero-latency zoom clarity.", "quadrant": "reasoning"}
+{"instruction": "How do I onnx webgpu esrgan upscaler?", "response": "Use when running lightweight Real-ESRGAN super-resolution models in-browser via WebGPU to upscale blurry feeds.", "quadrant": "reasoning"}
+{"instruction": "How do I open redirect hunter?", "response": "Use when finding unvalidated redirect parameters used in phishing and OAuth token theft.", "quadrant": "reasoning"}
+{"instruction": "How do I opencv wasm stabilizer?", "response": "Use when stabilizing wind-shaken traffic pole cameras using WebAssembly optical flow.", "quadrant": "reasoning"}
+{"instruction": "How do I osint recon?", "response": "Use when gathering Open-Source Intelligence on domains, metadata, and public leaks.", "quadrant": "reasoning"}
+{"instruction": "How do I overpass api query modernizer?", "response": "Use when updating OpenStreetMap queries to avoid rate-limited public endpoints.", "quadrant": "reasoning"}
+{"instruction": "How do I password security?", "response": "Use when enforcing Argon2id hashing, NIST policies, and credential stuffing defenses.", "quadrant": "reasoning"}
+{"instruction": "How do I path traversal check?", "response": "Use when testing file download/upload handlers for LFI and directory traversal.", "quadrant": "reasoning"}
+{"instruction": "How do I pentest methodology?", "response": "Use when running a structured end-to-end penetration test from recon to reporting.", "quadrant": "reasoning"}
+{"instruction": "How do I pentest report writer?", "response": "Use when formatting findings with CVSS scores, reproduction steps, and remediation patches.", "quadrant": "reasoning"}
+{"instruction": "How do I pivoting tunneling setup?", "response": "Use when configuring SSH, Chisel, and Ligolo-ng tunnels for segmented network assessments.", "quadrant": "reasoning"}
+{"instruction": "How do I poc exploit verifier?", "response": "Use when requiring reproducible proof-of-concept evidence before confirming a vulnerability.", "quadrant": "reasoning"}
+{"instruction": "How do I port scanning nmap?", "response": "Use when automating Nmap service detection and NSE vulnerability scripts.", "quadrant": "reasoning"}
+{"instruction": "How do I pre commit security gate?", "response": "Use when running secret scanners and linters automatically before git commits.", "quadrant": "reasoning"}
+{"instruction": "How do I precision in formatting?", "response": "Use when matching requested word counts, bullet structures, and schemas exactly.", "quadrant": "reasoning"}
+{"instruction": "How do I prompt injection defense?", "response": "Use when designing tool gates, taint tracking, and output sanitization against indirect prompt injection.", "quadrant": "reasoning"}
+{"instruction": "How do I prototype pollution scan?", "response": "Use when auditing JS/Node object merges for prototype pollution.", "quadrant": "reasoning"}
+{"instruction": "How do I ptz camera metadata parser?", "response": "Use when parsing pan-tilt-zoom telemetry to dynamically update viewshed cones.", "quadrant": "reasoning"}
+{"instruction": "How do I race condition tester?", "response": "Use when sending parallel async requests to exploit TOCTOU flaws in payments/coupons.", "quadrant": "reasoning"}
+{"instruction": "How do I rag poisoning check?", "response": "Use when auditing vector database ingestion pipelines for unauthorized document manipulation.", "quadrant": "reasoning"}
+{"instruction": "How do I rate limit exponential backoff?", "response": "Use when preventing third-party imagery providers from throttling your IP during rapid zooming.", "quadrant": "reasoning"}
+{"instruction": "How do I rate limiting verification?", "response": "Use when testing login, OTP, and password reset endpoints against brute-force attacks.", "quadrant": "reasoning"}
+{"instruction": "How do I rbac policy verifier?", "response": "Use when auditing Role-Based Access Control middleware across routes and microservices.", "quadrant": "reasoning"}
+{"instruction": "How do I receiving code review?", "response": "Use when validating suggested performance and rendering fixes against actual frame-time metrics.", "quadrant": "reasoning"}
+{"instruction": "How do I redis tile and snapshot cache?", "response": "Use when caching frequently requested imagery tiles and API responses locally.", "quadrant": "reasoning"}
+{"instruction": "How do I regex dos scanner?", "response": "Use when identifying catastrophic backtracking vulnerabilities (ReDoS) in regular expressions.", "quadrant": "reasoning"}
+{"instruction": "How do I renovate security automation?", "response": "Use when configuring automated security patch PRs for vulnerable dependencies.", "quadrant": "reasoning"}
+{"instruction": "How do I replicate api image upscaler?", "response": "Use when adding an on-demand 'Enhance Snapshot' button that upscales a still frame via Replicate API.", "quadrant": "reasoning"}
+{"instruction": "How do I requesting code review?", "response": "Use when auditing GLSL shaders and WebGL loops for GPU bottlenecks and memory leaks.", "quadrant": "reasoning"}
+{"instruction": "How do I responsive split screen inspector?", "response": "Use when docking high-res camera feeds cleanly beside the 3D globe instead of covering the target.", "quadrant": "reasoning"}
+{"instruction": "How do I rest api security?", "response": "Use when auditing REST endpoints against the OWASP API Security Top 10.", "quadrant": "reasoning"}
+{"instruction": "How do I reticle feathering and mask tuning?", "response": "Use when refining circular keyhole vignette masks so they don't crop useful screen edges.", "quadrant": "reasoning"}
+{"instruction": "How do I retina hidpi canvas scaling?", "response": "Use when configuring viewer.resolutionScale for crisp rendering on 4K and Retina displays.", "quadrant": "reasoning"}
+{"instruction": "How do I reverse engineering strings?", "response": "Use when triaging compiled binaries with strings, objdump, and Ghidra decompilation scripts.", "quadrant": "reasoning"}
+{"instruction": "How do I reverse shell payload gen?", "response": "Use when generating authorized test payloads for firewall egress filtering validation.", "quadrant": "reasoning"}
+{"instruction": "How do I saml assertion audit?", "response": "Use when testing SAML SSO implementations for XML signature wrapping attacks.", "quadrant": "reasoning"}
+{"instruction": "How do I 3D Gaussian Splatting / NeRF for Satellite Multi View?", "response": "Use when reconstructing photorealistic, arbitrary-angle 3D road scenes from multiple orbital captures.", "quadrant": "reasoning"}
+{"instruction": "How do I 6S & MODTRAN Radiative Transfer Correction?", "response": "Use when converting raw Digital Numbers (DN) into true surface reflectance with radiative transfer models.", "quadrant": "reasoning"}
+{"instruction": "How do I Impulse & Salt and Pepper Median Filtering (Adaptive)?", "response": "Use when removing transmission bit-errors without eroding 1-pixel targets.", "quadrant": "reasoning"}
+{"instruction": "How do I Adversarial & Weather Robustness Testing?", "response": "Use when benchmarking clarity pipelines across rain-slicked roads, snow glare, and dusk lighting.", "quadrant": "reasoning"}
+{"instruction": "How do I Aliasing & Moire Pattern Removal?", "response": "Use when suppressing Nyquist aliasing artifacts along dashed lane lines and crosswalks.", "quadrant": "reasoning"}
+{"instruction": "How do I Poisson Gaussian Variance Stabilization (Anscombe Transform)?", "response": "Use when converting signal-dependent photon noise into uniform additive noise for standard denoisers.", "quadrant": "reasoning"}
+{"instruction": "How do I Atmospheric Turbulence Mitigation?", "response": "Use when removing heat-haze shimmer rising off sun-baked asphalt roads.", "quadrant": "reasoning"}
+{"instruction": "How do I Bad Pixel & Cosmic Ray Spike Removal?", "response": "Use when interpolating dead detector pixels or radiation hits that mimic tiny white dots on roads.", "quadrant": "reasoning"}
+{"instruction": "How do I Gradient Preserving Bilateral Filtering?", "response": "Use when smoothing flat asphalt noise while respecting sharp luminance jumps.", "quadrant": "reasoning"}
+{"instruction": "How do I Blind Motion Deblurring?", "response": "Use when removing directional smear caused by spacecraft orbital velocity at 7.5 km/s and Time Delay Integration jitter.", "quadrant": "reasoning"}
+{"instruction": "How do I BM3D (Block Matching and 3D Filtering)?", "response": "Use when grouping similar road patches to strip Gaussian noise while preserving isolated tiny targets.", "quadrant": "reasoning"}
+{"instruction": "How do I BRDF (Bidirectional Reflectance Distribution Function) Normalization?", "response": "Use when correcting brightness changes caused by off-nadir viewing angles.", "quadrant": "reasoning"}
+{"instruction": "How do I Multi Object Tracking (ByteTrack / StrongSORT for Overhead Video)?", "response": "Use when linking faint detections across frames to maintain identity even when a target briefly fades into noise.", "quadrant": "reasoning"}
+{"instruction": "How do I CLAHE (Contrast Limited Adaptive Histogram Equalization)?", "response": "Use when enhancing local micro-contrast on uniform gray roads so tiny figures stand out.", "quadrant": "reasoning"}
+{"instruction": "How do I Context Prior Filtering (Road/Sidewalk Constraints)?", "response": "Use when weighting detection confidence higher along crosswalks, bus stops, and sidewalks.", "quadrant": "reasoning"}
+{"instruction": "How do I Cross Sensor Domain Adaptation?", "response": "Use when transferring sharpness priors from aerial drone imagery at 5 cm to orbital satellite imagery at 30 cm.", "quadrant": "reasoning"}
+{"instruction": "How do I Dark Channel Prior Deblurring?", "response": "Use when exploiting dark shadow pixels cast by pedestrians to estimate exact blur kernels.", "quadrant": "reasoning"}
+{"instruction": "How do I Atmospheric Scattering & Haze Removal (Dark Object Subtraction)?", "response": "Use when stripping Rayleigh and Mie scattering veils that wash out low-contrast road targets.", "quadrant": "reasoning"}
+{"instruction": "How do I Deep Residual Pansharpening (PanNet / FusionNet)?", "response": "Use when deep pansharpening networks must preserve sharp narrow road features while retaining true color radiometry.", "quadrant": "reasoning"}
+{"instruction": "How do I Defocus Aberration Correction?", "response": "Use when compensating for thermal expansion shifts in orbital mirror focal lengths.", "quadrant": "reasoning"}
+{"instruction": "How do I Deformable Convolutional Networks (DCN)?", "response": "Use when adapting receptive fields to elongated human silhouettes and irregular cast shadows.", "quadrant": "reasoning"}
+{"instruction": "How do I DehazeFormer & Physics Guided Dehazing?", "response": "Use when clearing thin cirrus clouds and urban smog over road networks.", "quadrant": "reasoning"}
+{"instruction": "How do I DEM Guided Terrain Slope Correction?", "response": "Use when accounting for steep road inclines that warp pixel ground footprint dimensions.", "quadrant": "reasoning"}
+{"instruction": "How do I Demosaicing Artifact Suppression?", "response": "Use when preventing zippering and false-color moire patterns on high-frequency road markings.", "quadrant": "reasoning"}
+{"instruction": "How do I Density Map Counting (CSRNet / DM Count)?", "response": "Use when estimating pedestrian presence and crowd density on busy roads even when individual limbs cannot be resolved.", "quadrant": "reasoning"}
+{"instruction": "How do I Destriping & Flat Field Calibration?", "response": "Use when eliminating vertical push-broom sensor banding across CCD/CMOS detector arrays.", "quadrant": "reasoning"}
+{"instruction": "How do I Diffusion Based Remote Sensing SR?", "response": "Use when latent diffusion models must synthesize realistic high-frequency texture in satellite imagery without hallucinating fake objects.", "quadrant": "reasoning"}
+{"instruction": "How do I Query Based Tiny Object Detection (DINO / RT DETR)?", "response": "Use when transformer cross-attention must locate sub-10-pixel targets without anchor-box mismatches.", "quadrant": "reasoning"}
+{"instruction": "How do I Digital Surface Model (DSM) True Ortho Projection?", "response": "Use when eliminating building lean so tall structures do not occlude adjacent sidewalks and roads.", "quadrant": "reasoning"}
+{"instruction": "How do I Dynamic Range Compression & Tone Mapping?", "response": "Use when mapping 11-bit/12-bit/16-bit raw satellite radiometry into 8-bit displays without crushing dark tones.", "quadrant": "reasoning"}
+{"instruction": "How do I Edge Guided Super Resolution?", "response": "Use when extracting high-frequency gradient maps first so super-resolution does not blur road curbs and human silhouettes.", "quadrant": "reasoning"}
+{"instruction": "How do I Epipolar Geometry Alignment?", "response": "Use when rectifying stereo pairs so parallax shifts directly reveal tiny objects standing above the road plane.", "quadrant": "reasoning"}
+{"instruction": "How do I Event Based / Neuromorphic Sensor Processing?", "response": "Use when high-temporal-resolution change detection is needed for future orbital motion tracking.", "quadrant": "reasoning"}
+{"instruction": "How do I Frequency Aware Loss Optimization (Focal Frequency Loss)?", "response": "Use when forcing a restoration network to prioritize high-frequency spatial details over flat asphalt backgrounds during training.", "quadrant": "reasoning"}
+{"instruction": "How do I Focal Loss & Hard Negative Mining?", "response": "Use when suppressing false positives from manhole covers, fire hydrants, road markings, and trash bins.", "quadrant": "reasoning"}
+{"instruction": "How do I Feature Pyramid Networks (FPN / PANet / BiFPN)?", "response": "Use when fusing shallow, high-resolution P2 feature layers where single-pixel spatial details still survive.", "quadrant": "reasoning"}
+{"instruction": "How do I Geo Referencing & Ground Control Point (GCP) Bundle Adjustment?", "response": "Use when locking image coordinates to sub-decimeter geographic accuracy.", "quadrant": "reasoning"}
+{"instruction": "How do I Zero Shot / Open Vocabulary Remote Sensing (GeoRSCLIP / RemoteCLIP)?", "response": "Use when querying ultra-high-res crops using vision-language models fine-tuned on overhead imagery.", "quadrant": "reasoning"}
+{"instruction": "How do I Hallucination Detection & Uncertainty Quantification?", "response": "Use when flagging pixels generated purely by AI priors versus grounded in physical sensor photons.", "quadrant": "reasoning"}
+{"instruction": "How do I Homomorphic Filtering?", "response": "Use when simultaneously normalizing uneven road illumination and boosting high-frequency edge contrast.", "quadrant": "reasoning"}
+{"instruction": "How do I Human in the Loop Forensic Verification Workflows?", "response": "Use when presenting side-by-side raw, sharpened, and temporal-reference crops to prevent false identification.", "quadrant": "reasoning"}
+{"instruction": "How do I Hyperspectral Unmixing (Sub Pixel Target Detection)?", "response": "Use when decomposing a single mixed pixel's spectrum to detect fractional presence of human clothing/skin materials.", "quadrant": "reasoning"}
+{"instruction": "How do I Implicit Neural Representations (INR / LIIF)?", "response": "Use when implicit neural representations query continuous coordinates to zoom smoothly into pedestrian-scale regions without pixelation.", "quadrant": "reasoning"}
+{"instruction": "How do I Jitter & Attitude Distortion Compensation?", "response": "Use when correcting micro-vibration ripples using onboard star-tracker and gyroscope telemetry.", "quadrant": "reasoning"}
+{"instruction": "How do I Super Resolution Assisted Detection (Joint SR + Detection)?", "response": "Use when backpropagating object detection loss directly into the super-resolution generator.", "quadrant": "reasoning"}
+{"instruction": "How do I JPEG2000 & CCSDS Downlink Artifact Removal?", "response": "Use when eliminating ringing and blocking artifacts caused by onboard satellite data compression.", "quadrant": "reasoning"}
+{"instruction": "How do I LiDAR Guided Depth Super Resolution?", "response": "Use when airborne LiDAR point clouds serve as geometric priors to sharpen orbital imagery.", "quadrant": "reasoning"}
+{"instruction": "How do I Lucky Imaging Frame Selection?", "response": "Use when selecting and stacking the sharpest micro-exposures from burst captures.", "quadrant": "reasoning"}
+{"instruction": "How do I Matched Filtering & ACE (Adaptive Cosine Estimator)?", "response": "Use when detecting sub-pixel spectral anomalies against local asphalt background statistics.", "quadrant": "reasoning"}
+{"instruction": "How do I Image Mosaicking & Seamline Blending?", "response": "Use when merging adjacent satellite strips seamlessly without cutting across moving road targets.", "quadrant": "reasoning"}
+{"instruction": "How do I Motion Assisted Detection (Optical Flow / Frame Differencing)?", "response": "Use when detecting 1-2 pixel moving entities across sequential video satellite frames by velocity vectors.", "quadrant": "reasoning"}
+{"instruction": "How do I Modulation Transfer Function (MTF) & Edge Spread Measurement?", "response": "Use when measuring true spatial sharpness using painted road crosswalks as natural slanted-edge targets.", "quadrant": "reasoning"}
+{"instruction": "How do I Multi Constellation Temporal Fusion?", "response": "Use when combining morning, midday, and afternoon passes from different constellations to capture optimal sun-shadow angles.", "quadrant": "reasoning"}
+{"instruction": "How do I Multi Frame Super Resolution (MFSR)?", "response": "Use when fusing multiple slightly shifted satellite passes of the same road to recover sub-pixel detail beyond a single frame GSD.", "quadrant": "reasoning"}
+{"instruction": "How do I Multi View Stereo (MVS) 3D Reconstruction?", "response": "Use when rebuilding sub-meter elevation profiles from stereo satellite pairs to detect vertical relief.", "quadrant": "reasoning"}
+{"instruction": "How do I Nighttime Low Light Enhancement (LLIE)?", "response": "Use when boosting signal-to-noise ratio under streetlamps using zero-reference deep curves.", "quadrant": "reasoning"}
+{"instruction": "How do I No Reference Image Quality Assessment (NIQE / BRISQUE / MUSIQ)?", "response": "Use when automatically scoring sharpness and clarity when no ground-truth image exists.", "quadrant": "reasoning"}
+{"instruction": "How do I Noise2Void / Self Supervised Denoising?", "response": "Use when training denoisers directly on noisy orbital imagery without clean ground truth.", "quadrant": "reasoning"}
+{"instruction": "How do I Non Local Means (NLM) Denoising?", "response": "Use when averaging repetitive pavement textures without smearing non-repeating pedestrian pixels.", "quadrant": "reasoning"}
+{"instruction": "How do I Normalized Wasserstein Distance (NWD) Loss?", "response": "Use when replacing IoU loss, which fails on 2x2 pixel targets, with distribution-based similarity metrics.", "quadrant": "reasoning"}
+{"instruction": "How do I Off Nadir Angle Compensation?", "response": "Use when correcting foreshortening distortion when a satellite captures a road at a 20-35 degree slant angle.", "quadrant": "reasoning"}
+{"instruction": "How do I Oriented Bounding Box (OBB) Detection?", "response": "Use when predicting rotated bounding boxes aligned with road direction and shadow orientation.", "quadrant": "reasoning"}
+{"instruction": "How do I Pansharpening (Brovey, Gram Schmidt, IHS)?", "response": "Use when merging high-resolution panchromatic bands with lower-resolution multispectral color bands to sharpen satellite road imagery.", "quadrant": "reasoning"}
+{"instruction": "How do I satellite pansharpening pipeline?", "response": "Use when combining high-res panchromatic bands with lower-res multispectral bands in a Node worker.", "quadrant": "reasoning"}
+{"instruction": "How do I Perspective & Homography Rectification?", "response": "Use when warping oblique aerial/satellite views into top-down nadir geometry.", "quadrant": "reasoning"}
+{"instruction": "How do I Polarimetric Filtering?", "response": "Use when filtering polarized sunlight reflected off flat asphalt to reveal non-flat vertical objects.", "quadrant": "reasoning"}
+{"instruction": "How do I Sensor PSF Estimation & Deconvolution?", "response": "Use when modeling the optical diffraction and detector blur kernel of a satellite telescope to restore sharp edges.", "quadrant": "reasoning"}
+{"instruction": "How do I Raw Sensor Shot & Read Noise Modeling?", "response": "Use when denoising linear raw imagery before demosaicing or gamma compression destroys faint signals.", "quadrant": "reasoning"}
+{"instruction": "How do I Real ESRGAN & BSRGAN Degradation Modeling?", "response": "Use when training or fine-tuning SR networks on realistic sensor blur, compression, and atmospheric noise instead of simple bicubic downsampling.", "quadrant": "reasoning"}
+{"instruction": "How do I Restormer & NAFNet Restoration?", "response": "Use when nonlinear activation-free networks remove complex atmospheric and motion blur simultaneously from satellite imagery.", "quadrant": "reasoning"}
+{"instruction": "How do I Retinex Illumination Reflectance Decomposition?", "response": "Use when separating uneven lighting conditions from true object surface albedo.", "quadrant": "reasoning"}
+{"instruction": "How do I Richardson Lucy Iterative Deconvolution?", "response": "Use when restoring sharp edges on high-contrast targets using Poisson noise statistics via iterative Richardson-Lucy deconvolution.", "quadrant": "reasoning"}
+{"instruction": "How do I Road Centerline & Mask Extraction?", "response": "Use when isolating road surfaces to constrain search areas and eliminate background clutter.", "quadrant": "reasoning"}
+{"instruction": "How do I Rational Polynomial Coefficient (RPC) Orthorectification?", "response": "Use when removing terrain tilt and camera perspective distortion so roads align true to scale.", "quadrant": "reasoning"}
+{"instruction": "How do I SAHI (Slicing Aided Hyper Inference)?", "response": "Use when splitting massive gigapixel satellite scenes into overlapping high-res patches so tiny targets are not downscaled away.", "quadrant": "reasoning"}
+{"instruction": "How do I SAR Optical Cross Modal Translation?", "response": "Use when fusing Synthetic Aperture Radar backscatter with optical tiles during partial cloud cover.", "quadrant": "reasoning"}
+{"instruction": "How do I Swin Conv UNet (SCUNet) Blind Denoising?", "response": "Use when handling mixed sensor noise levels across varying illumination zones.", "quadrant": "reasoning"}
+{"instruction": "How do I Shadow Detection & Radiometric Compensation?", "response": "Use when brightening pedestrians inside building or tree shadows without blowing out sunlit asphalt.", "quadrant": "reasoning"}
+{"instruction": "How do I Shadow Length Height Estimation?", "response": "Use when calculating the exact height of a tiny road object from sun azimuth, elevation angle, and cast shadow length.", "quadrant": "reasoning"}
+{"instruction": "How do I Context Aware Shadow Target Pairing?", "response": "Use when training detectors to recognize a pedestrian and their elongated cast shadow as a single joint signature.", "quadrant": "reasoning"}
+{"instruction": "How do I Single Image Super Resolution (SISR)?", "response": "Use when upscaling low-resolution satellite tiles with deep convolutional or transformer networks to recover sub-pixel road and pedestrian detail.", "quadrant": "reasoning"}
+{"instruction": "How do I Non Uniform / Spatially Varying Deblurring?", "response": "Use when correcting off-nadir perspective distortion and lens aberrations that blur differently across wide swath edges.", "quadrant": "reasoning"}
+{"instruction": "How do I Spectral Spatial Total Variation Denoising?", "response": "Use when exploiting correlations across RGB and NIR bands to isolate true physical objects from noise.", "quadrant": "reasoning"}
+{"instruction": "How do I Sub Pixel Centroid Localization?", "response": "Use when computing intensity-weighted centers of mass to track pedestrian positions with sub-pixel precision.", "quadrant": "reasoning"}
+{"instruction": "How do I Sub Pixel Phase Correlation?", "response": "Use when measuring and reversing fractional-pixel drift between Time Delay Integration sensor stages.", "quadrant": "reasoning"}
+{"instruction": "How do I Sub Pixel Shift Estimation (Sub Pixel Registration)?", "response": "Use when aligning sequential burst frames to within 0.05-pixel accuracy before multi-frame fusion.", "quadrant": "reasoning"}
+{"instruction": "How do I Sun Glint & Specular Reflection Suppression?", "response": "Use when eliminating blinding reflections off car windshields and wet pavement that saturate nearby pixels.", "quadrant": "reasoning"}
+{"instruction": "How do I SwinIR & HAT Transformer Upscaling?", "response": "Use when applying Hybrid Attention or Swin transformer upscalers that capture long-range road geometry while sharpening tiny targets.", "quadrant": "reasoning"}
+{"instruction": "How do I Temporal Change Detection (Background Subtraction)?", "response": "Use when comparing a current pass against a clear historical reference of the exact same road to isolate newly appeared pedestrians.", "quadrant": "reasoning"}
+{"instruction": "How do I Temporal Denoising for Video Satellites?", "response": "Use when filtering frame-to-frame sensor grain while locking onto moving objects.", "quadrant": "reasoning"}
+{"instruction": "How do I Multi Scale Test Time Augmentation (TTA)?", "response": "Use when running inference across rotated and zoomed crops to boost recall on borderline-visible figures.", "quadrant": "reasoning"}
+{"instruction": "How do I Thermal Infrared (LWIR) Anomaly Fusion?", "response": "Use when pairing thermal contrast with optical imagery to spot warm human signatures against cool pavement.", "quadrant": "reasoning"}
+{"instruction": "How do I Tiled Streaming & Memory Efficient Inference (GDAL / Rasterio)?", "response": "Use when processing multi-gigabyte GeoTIFF scenes without losing geospatial metadata or CRS projections.", "quadrant": "reasoning"}
+{"instruction": "How do I True Color & False Color Band Synthesis?", "response": "Use when combining Red-Edge and Near-Infrared (NIR) bands to separate organic skin/clothing from mineral asphalt.", "quadrant": "reasoning"}
+{"instruction": "How do I Total Variation (TV) Regularized Deconvolution?", "response": "Use when sharpening object boundaries while keeping smooth road surfaces flat via total-variation regularized deconvolution.", "quadrant": "reasoning"}
+{"instruction": "How do I Sub Pixel Co Registration with Vector Road Maps?", "response": "Use when aligning OpenStreetMap/HD road vectors to pinpoint exact lanes and crosswalks.", "quadrant": "reasoning"}
+{"instruction": "How do I Video Satellite Super Resolution (VSR)?", "response": "Use when exploiting temporal continuity across full-motion satellite video to resolve moving pedestrians frame to frame.", "quadrant": "reasoning"}
+{"instruction": "How do I VNIR + SWIR Spectral Fusion?", "response": "Use when Short-Wave Infrared (1.2-2.5 um) must penetrate smoke/haze and distinguish synthetic fabrics from asphalt.", "quadrant": "reasoning"}
+{"instruction": "How do I Wavelet Domain Super Resolution?", "response": "Use when reconstructing high-frequency sub-bands separately in the discrete wavelet domain to recover detail in satellite tiles.", "quadrant": "reasoning"}
+{"instruction": "How do I Wiener Filtering?", "response": "Use when suppressing optical blur in the Fourier domain while bounding noise amplification with a Wiener filter.", "quadrant": "reasoning"}
+{"instruction": "How do I Zero Shot Internal Learning (ZSSR)?", "response": "Use when adapting super-resolution weights on the fly from recurring patches within a single satellite scene with no external data.", "quadrant": "reasoning"}
+{"instruction": "How do I sbom generator?", "response": "Use when generating CycloneDX/SPDX Software Bills of Materials for release builds.", "quadrant": "reasoning"}
+{"instruction": "How do I scope containment?", "response": "Use when staying within the original task scope and logging out-of-scope ideas separately.", "quadrant": "reasoning"}
+{"instruction": "How do I secrets management scan?", "response": "Use when detecting hardcoded API keys, private keys, and .env exposure.", "quadrant": "reasoning"}
+{"instruction": "How do I security hardening?", "response": "Use when performing comprehensive code review against the OWASP Top 10.", "quadrant": "reasoning"}
+{"instruction": "How do I self correction?", "response": "Use when diagnosing and fixing errors from tool output without repeating failed approaches.", "quadrant": "reasoning"}
+{"instruction": "How do I semgrep custom rules?", "response": "Use when writing and running custom Semgrep AST rules tailored to the project's stack.", "quadrant": "reasoning"}
+{"instruction": "How do I serverless function audit?", "response": "Use when checking AWS Lambda/Cloud Functions for event injection and excess permissions.", "quadrant": "reasoning"}
+{"instruction": "How do I session management audit?", "response": "Use when checking session entropy, fixation, and invalidation on logout.", "quadrant": "reasoning"}
+{"instruction": "How do I shader uniform live tuner?", "response": "Use when exposing GLSL shader parameters to a debug UI for real-time visual calibration.", "quadrant": "reasoning"}
+{"instruction": "How do I skill creator?", "response": "Use when packaging your custom Cesium/GLSL clarity workflow into a reusable .opencode/skills/ module.", "quadrant": "reasoning"}
+{"instruction": "How do I skill risk filter?", "response": "Use when filtering third-party agent skills by risk tier (safe, critical, offensive).", "quadrant": "reasoning"}
+{"instruction": "How do I smart crop zoom interpolator?", "response": "Use when using Lanczos resampling instead of blurry bilinear scaling when digitally zooming into CCTV feeds.", "quadrant": "reasoning"}
+{"instruction": "How do I smb netbios enumeration?", "response": "Use when auditing internal file shares for null sessions and anonymous read/write access.", "quadrant": "reasoning"}
+{"instruction": "How do I smooth camera flyto easing?", "response": "Use when preventing motion blur and disorientation during rapid globe-to-street zoom transitions.", "quadrant": "reasoning"}
+{"instruction": "How do I soc2 readiness evidence?", "response": "Use when automating engineering control checks for SOC 2 Type I/II compliance.", "quadrant": "reasoning"}
+{"instruction": "How do I social account takeover checklist?", "response": "Use when audits social login (Sign in with Google/Apple/X) linking vulnerabilities.", "quadrant": "reasoning"}
+{"instruction": "How do I social ads library recon?", "response": "Use when inspects Meta/Google/LinkedIn Ad Libraries to discover active landing pages and campaigns.", "quadrant": "reasoning"}
+{"instruction": "How do I social api token scope audit?", "response": "Use when audits developer API keys on X, Meta, and Discord for overly broad write scopes.", "quadrant": "reasoning"}
+{"instruction": "How do I social badge photo leak scan?", "response": "Use when reviews public employee photos for visible office badges, whiteboards, and screens.", "quadrant": "reasoning"}
+{"instruction": "How do I social bluesky atproto osint?", "response": "Use when queries public AT Protocol DID documents and handle domain verifications.", "quadrant": "reasoning"}
+{"instruction": "How do I social calendly zoom leak check?", "response": "Use when finds exposed personal Zoom rooms and scheduling links shared publicly.", "quadrant": "reasoning"}
+{"instruction": "How do I social crisis comms lockdown?", "response": "Use when playbook for locking down brand socials during an active security incident.", "quadrant": "reasoning"}
+{"instruction": "How do I social darkweb mention alert?", "response": "Use when queries authorized threat-intel feeds for brand/handle mentions on forums.", "quadrant": "reasoning"}
+{"instruction": "How do I social data broker optout tracker?", "response": "Use when tracks removal requests across major people-search and data broker sites.", "quadrant": "reasoning"}
+{"instruction": "How do I social deepfake media triage?", "response": "Use when checks audio/video metadata and artifacts for synthetic media indicators.", "quadrant": "reasoning"}
+{"instruction": "How do I social discord invite osint?", "response": "Use when inspects public Discord server invites, widget APIs, and vanity URLs.", "quadrant": "reasoning"}
+{"instruction": "How do I social domain txt verification?", "response": "Use when audits DNS TXT records (facebook-domain-verification=, bluesky) for ownership leaks.", "quadrant": "reasoning"}
+{"instruction": "How do I social email change notification?", "response": "Use when verifies platforms alert the old email address immediately on account changes.", "quadrant": "reasoning"}
+{"instruction": "How do I social exif geo cleaner?", "response": "Use when strips GPS coordinates, camera serials, and timestamps from media before posting.", "quadrant": "reasoning"}
+{"instruction": "How do I social facebook graph osint?", "response": "Use when checks public page transparency logs, ad libraries, and linked domains.", "quadrant": "reasoning"}
+{"instruction": "How do I social ghunt google osint?", "response": "Use when audits public Google account footprints (Maps reviews, YouTube, Calendar exposure).", "quadrant": "reasoning"}
+{"instruction": "How do I social github gist secret hunt?", "response": "Use when scans public Gists belonging to org developers for stray tokens and configs.", "quadrant": "reasoning"}
+{"instruction": "How do I social github org recon?", "response": "Use when enumerates public org members, gists, and personal repos for leaked secrets.", "quadrant": "reasoning"}
+{"instruction": "How do I social hijack recovery kit?", "response": "Use when pre-builds account ownership evidence (creation dates, original emails, backup codes).", "quadrant": "reasoning"}
+{"instruction": "How do I social holehe email check?", "response": "Use when checks which social platforms have registered accounts tied to an authorized email.", "quadrant": "reasoning"}
+{"instruction": "How do I social impersonation hunter?", "response": "Use when searches platforms for fake executive or support accounts using fuzzy handle matching.", "quadrant": "reasoning"}
+{"instruction": "How do I social instagram metadata audit?", "response": "Use when checks public posts, tagged locations, and highlight reels for physical OPSEC risks.", "quadrant": "reasoning"}
+{"instruction": "How do I social job post tech extractor?", "response": "Use when parses social recruiting posts to build a target's internal software inventory.", "quadrant": "reasoning"}
+{"instruction": "How do I social keybase identity proof?", "response": "Use when verifies cryptographic identity proofs linking domains, GitHub, and socials.", "quadrant": "reasoning"}
+{"instruction": "How do I social linkedin employee map?", "response": "Use when maps public organizational charts, tech stacks, and job postings from LinkedIn.", "quadrant": "reasoning"}
+{"instruction": "How do I social linktree bio mapper?", "response": "Use when crawls bio-link aggregators (Linktree, Beacons) to map all connected profiles.", "quadrant": "reasoning"}
+{"instruction": "How do I social maigret profile dossier?", "response": "Use when automates Maigret to correlate usernames, bios, and linked accounts.", "quadrant": "reasoning"}
+{"instruction": "How do I social maltego transform prep?", "response": "Use when formats OSINT entities (handles, emails, domains) into CSV/JSON for graph tools.", "quadrant": "reasoning"}
+{"instruction": "How do I social mastodon fediverse recon?", "response": "Use when maps federated ActivityPub handles and instance metadata.", "quadrant": "reasoning"}
+{"instruction": "How do I social mfa passkey hardening?", "response": "Use when replaces SMS 2FA with FIDO2 hardware keys/passkeys to defeat SIM swapping.", "quadrant": "reasoning"}
+{"instruction": "How do I social npm pypi maintainer map?", "response": "Use when links social handles to open-source package maintainers (supply-chain risk).", "quadrant": "reasoning"}
+{"instruction": "How do I social oauth app auditor?", "response": "Use when lists and revokes stale third-party apps connected to X, Google, GitHub, and Meta.", "quadrant": "reasoning"}
+{"instruction": "How do I social open graph spoof test?", "response": "Use when tests how web apps render Open Graph link previews to prevent preview spoofing.", "quadrant": "reasoning"}
+{"instruction": "How do I social osint opsec sockpuppet?", "response": "Use when checklist for isolating researcher browsers, VPNs, and burner accounts safely.", "quadrant": "reasoning"}
+{"instruction": "How do I social osint report formatter?", "response": "Use when compiles digital footprint findings into an executive risk-remediation report.", "quadrant": "reasoning"}
+{"instruction": "How do I social phishing dm classifier?", "response": "Use when flags common social engineering DM lures (fake copyright strikes, fake collabs).", "quadrant": "reasoning"}
+{"instruction": "How do I social phone number decoupling?", "response": "Use when identifies accounts where a personal phone number is discoverable via contact sync.", "quadrant": "reasoning"}
+{"instruction": "How do I social pinterest board osint?", "response": "Use when analyzes public boards and saved source domains for target profiling.", "quadrant": "reasoning"}
+{"instruction": "How do I social privacy setting hardener?", "response": "Use when generates platform-by-platform privacy checklists for executives.", "quadrant": "reasoning"}
+{"instruction": "How do I social recon ng workflow?", "response": "Use when runs modular Recon-ng contact and profile discovery playbooks.", "quadrant": "reasoning"}
+{"instruction": "How do I social recovery email isolation?", "response": "Use when ensures social accounts use dedicated, non-public recovery email addresses.", "quadrant": "reasoning"}
+{"instruction": "How do I social reddit history analyzer?", "response": "Use when correlates public Reddit post timestamps, subreddits, and tech mentions.", "quadrant": "reasoning"}
+{"instruction": "How do I social reverse image osint?", "response": "Use when prepares image crops and hashes for reverse-image provenance verification.", "quadrant": "reasoning"}
+{"instruction": "How do I social session cookie hygiene?", "response": "Use when audits browser profiles to isolate social sessions from daily browsing (infostealer defense).", "quadrant": "reasoning"}
+{"instruction": "How do I social session revocation test?", "response": "Use when confirms changing a password invalidates all active mobile and web sessions.", "quadrant": "reasoning"}
+{"instruction": "How do I social sim swap carrier lock?", "response": "Use when checklist and scripts to verify carrier port-freeze PINs for high-risk accounts.", "quadrant": "reasoning"}
+{"instruction": "How do I social slack workspace exposure?", "response": "Use when checks for publicly indexed Slack invite links or exposed workspace names.", "quadrant": "reasoning"}
+{"instruction": "How do I social spiderfoot scan orchestrator?", "response": "Use when automates SpiderFoot OSINT modules against an authorized target entity.", "quadrant": "reasoning"}
+{"instruction": "How do I social spotify playlist osint?", "response": "Use when identifies linked real names and friend activity on public music profiles.", "quadrant": "reasoning"}
+{"instruction": "How do I social steam gaming profile map?", "response": "Use when correlates SteamID64, alias history, and linked Discord/Twitch accounts.", "quadrant": "reasoning"}
+{"instruction": "How do I social strava heatmap opsec?", "response": "Use when audits fitness app privacy zones around sensitive facilities or residences.", "quadrant": "reasoning"}
+{"instruction": "How do I social stylometry author check?", "response": "Use when compares writing patterns across public accounts for attribution research.", "quadrant": "reasoning"}
+{"instruction": "How do I social telegram bot token check?", "response": "Use when scans repositories for leaked Telegram Bot API tokens (bot123456:ABC...).", "quadrant": "reasoning"}
+{"instruction": "How do I social telegram channel monitor?", "response": "Use when monitors public Telegram channels/groups for brand mentions or leak alerts.", "quadrant": "reasoning"}
+{"instruction": "How do I social threat actor ttp tracker?", "response": "Use when maps social engineering campaigns to MITRE ATT&CK Reconnaissance techniques.", "quadrant": "reasoning"}
+{"instruction": "How do I social tiktok profile osint?", "response": "Use when extracts public video metadata, audio reuse, and linked social handles.", "quadrant": "reasoning"}
+{"instruction": "How do I social timezone activity heatmap?", "response": "Use when infers user working hours and likely timezone from public post timestamps.", "quadrant": "reasoning"}
+{"instruction": "How do I social trello notion public scan?", "response": "Use when searches for misconfigured public Trello boards or Notion pages linked on socials.", "quadrant": "reasoning"}
+{"instruction": "How do I social url shortener analytics?", "response": "Use when checks public click stats on exposed bit.ly or tinyurl links (+ suffix).", "quadrant": "reasoning"}
+{"instruction": "How do I social username sherlock?", "response": "Use when runs Sherlock across 300+ platforms to map public username reuse.", "quadrant": "reasoning"}
+{"instruction": "How do I social venmo public tx audit?", "response": "Use when checks public payment feeds for social graph and location exposure.", "quadrant": "reasoning"}
+{"instruction": "How do I social wayback profile archive?", "response": "Use when queries Wayback Machine snapshots for deleted posts or historical bio changes.", "quadrant": "reasoning"}
+{"instruction": "How do I social webhook url leak scan?", "response": "Use when searches public code and posts for exposed Discord/Slack incoming webhook URLs.", "quadrant": "reasoning"}
+{"instruction": "How do I social x twitter osint?", "response": "Use when analyzes public tweets, reply networks, and client sources for OPSEC leaks.", "quadrant": "reasoning"}
+{"instruction": "How do I social youtube channel audit?", "response": "Use when inspects channel about pages, featured channels, and video descriptions.", "quadrant": "reasoning"}
+{"instruction": "How do I social youtube transcript osint?", "response": "Use when searches video captions/transcripts for accidental mentions of internal tools.", "quadrant": "reasoning"}
+{"instruction": "How do I sqli detection?", "response": "Use when auditing database queries and automating SQLMap verification for SQL injection.", "quadrant": "reasoning"}
+{"instruction": "How do I ssrf prevention?", "response": "Use when auditing URL-fetching endpoints for SSRF against internal metadata.", "quadrant": "reasoning"}
+{"instruction": "How do I ssti exploit check?", "response": "Use when detecting Server-Side Template Injection across Jinja2, Twig, and Freemarker.", "quadrant": "reasoning"}
+{"instruction": "How do I stale frame watchdog?", "response": "Use when detecting frozen camera feeds and auto-reconnecting or switching to backup endpoints.", "quadrant": "reasoning"}
+{"instruction": "How do I stream buffer de jitter?", "response": "Use when smoothing out choppy public camera frame rates with frame interpolation.", "quadrant": "reasoning"}
+{"instruction": "How do I stride threat modeling?", "response": "Use when generating STRIDE threat models and data-flow diagrams for new architectures.", "quadrant": "reasoning"}
+{"instruction": "How do I subdomain enum?", "response": "Use when orchestrating passive and active subdomain discovery (Amass, Subfinder).", "quadrant": "reasoning"}
+{"instruction": "How do I systematic debugging?", "response": "Use when isolating whether blurriness stems from source feed resolution, proxy compression, or WebGL scaling.", "quadrant": "reasoning"}
+{"instruction": "How do I taint tracking flow?", "response": "Use when tracing untrusted user sources to dangerous execution sinks across files.", "quadrant": "reasoning"}
+{"instruction": "How do I tech stack fingerprinting?", "response": "Use when identifying web servers, frameworks, and CMS versions on targets.", "quadrant": "reasoning"}
+{"instruction": "How do I telemetry drawer collapsible?", "response": "Use when keeping detailed flight/vessel metadata tucked away until inspected.", "quadrant": "reasoning"}
+{"instruction": "How do I telemetry mock replay harness?", "response": "Use when recording and replaying live feeds to test shader and clarity improvements offline.", "quadrant": "reasoning"}
+{"instruction": "How do I temporal frame averaging?", "response": "Use when stacking multiple static frames from fixed cameras to reduce random sensor noise.", "quadrant": "reasoning"}
+{"instruction": "How do I tensorflowjs low light enhancer?", "response": "Use when integrating Zero-DCE models to brighten dark street cameras in real time.", "quadrant": "reasoning"}
+{"instruction": "How do I terraform iac scan?", "response": "Use when running Checkov/tfsec rules against Infrastructure-as-Code templates.", "quadrant": "reasoning"}
+{"instruction": "How do I terrain exaggeration calibration?", "response": "Use when tuning terrain elevation meshes so camera projections sit flush on the ground.", "quadrant": "reasoning"}
+{"instruction": "How do I thumbnail to hd stream upgrade?", "response": "Use when loading low-res previews on the globe and hot-swapping to full HD when clicked.", "quadrant": "reasoning"}
+{"instruction": "How do I tile cache preloading?", "response": "Use when prefetching surrounding map tiles along the camera movement vector to eliminate blur during panning.", "quadrant": "reasoning"}
+{"instruction": "How do I tile request throttling manager?", "response": "Use when batching and prioritizing tile requests to prevent rate-limit downgrades.", "quadrant": "reasoning"}
+{"instruction": "How do I token exfiltration monitor?", "response": "Use when detecting covert data exfiltration via Markdown image links or tool parameters.", "quadrant": "reasoning"}
+{"instruction": "How do I tradeoff evaluation?", "response": "Use when evaluating speed, memory, complexity, and cost to pick a Pareto-optimal design.", "quadrant": "reasoning"}
+{"instruction": "How do I typography legibility hi dpi?", "response": "Use when tuning monospace HUD fonts, drop shadows, and contrast ratios over bright satellite terrain.", "quadrant": "reasoning"}
+{"instruction": "How do I typosquatting guard?", "response": "Use when verifying newly added packages against dependency confusion and malicious lookalikes.", "quadrant": "reasoning"}
+{"instruction": "How do I using git worktrees?", "response": "Use when testing experimental WebGPU upscalers or shader pipelines in isolated Git worktrees.", "quadrant": "reasoning"}
+{"instruction": "How do I variant analysis?", "response": "Use when hunting for bug siblings across a codebase once a single vulnerability pattern is found.", "quadrant": "reasoning"}
+{"instruction": "How do I verification before answer?", "response": "Use when verifying claims against tool output and codebase before answering.", "quadrant": "reasoning"}
+{"instruction": "How do I verification before completion?", "response": "Use when requiring visual screenshot diffs and FPS benchmarks before marking a clarity fix done.", "quadrant": "reasoning"}
+{"instruction": "How do I vite bundle and worker splitter?", "response": "Use when splitting heavy Cesium and CV libraries into async chunks for faster startup.", "quadrant": "reasoning"}
+{"instruction": "How do I vpc network segmentation?", "response": "Use when auditing security groups, NACLs, and exposed database ports.", "quadrant": "reasoning"}
+{"instruction": "How do I webcodecs hardware decoding?", "response": "Use when using the browser VideoDecoder API for sharper, hardware-accelerated frame extraction.", "quadrant": "reasoning"}
+{"instruction": "How do I webgl canvas screenshot exporter?", "response": "Use when capturing lossless PNG snapshots of the globe and camera views without UI chrome.", "quadrant": "reasoning"}
+{"instruction": "How do I webgl fxaa msaa antialiasing?", "response": "Use when configuring multi-sample anti-aliasing to eliminate jagged lines on 3D models and HUD reticles.", "quadrant": "reasoning"}
+{"instruction": "How do I webgl2 anisotropic filtering?", "response": "Use when enabling maximum anisotropic texture filtering on ground imagery tiles.", "quadrant": "reasoning"}
+{"instruction": "How do I webhook signature check?", "response": "Use when verifying HMAC signature validation and replay protection on incoming webhooks.", "quadrant": "reasoning"}
+{"instruction": "How do I webrtc low latency stream handler?", "response": "Use when upgrading sluggish JPEG-refresh feeds to low-latency WebRTC/RTSP-to-WS streams.", "quadrant": "reasoning"}
+{"instruction": "How do I websocket backpressure handler?", "response": "Use when dropping stale telemetry packets instead of lagging the render loop.", "quadrant": "reasoning"}
+{"instruction": "How do I websocket hijacking check?", "response": "Use when auditing WebSocket handshakes for Cross-Site WebSocket Hijacking (CSWSH).", "quadrant": "reasoning"}
+{"instruction": "How do I wifi wpa2 audit?", "response": "Use when auditing wireless handshake capture and PMKID resistance via Aircrack-ng.", "quadrant": "reasoning"}
+{"instruction": "How do I windows privesc checklist?", "response": "Use when checking unquoted service paths, weak registry permissions, and token privileges.", "quadrant": "reasoning"}
+{"instruction": "How do I wireshark pcap analysis?", "response": "Use when inspecting packet captures for cleartext credentials, anomalies, and C2 traffic.", "quadrant": "reasoning"}
+{"instruction": "How do I wms wmts custom layer loader?", "response": "Use when hooking up high-resolution regional orthophoto WMTS/WMS endpoints.", "quadrant": "reasoning"}
+{"instruction": "How do I writing plans?", "response": "Use when breaking down shader, Cesium, and proxy upgrades into testable implementation milestones.", "quadrant": "reasoning"}
+{"instruction": "How do I xss prevention and fuzzing?", "response": "Use when identifying reflected, stored, and DOM-based XSS sinks.", "quadrant": "reasoning"}
+{"instruction": "How do I xxe parser audit?", "response": "Use when checking XML parsers for External Entity injection and file disclosure.", "quadrant": "reasoning"}
+{"instruction": "How do I yolo webgpu object highlighting?", "response": "Use when sharpening situational awareness with clean bounding boxes around vehicles, ships, and planes.", "quadrant": "reasoning"}

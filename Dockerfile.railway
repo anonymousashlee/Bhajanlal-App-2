@@ -1,0 +1,28 @@
+FROM python:3.12-slim AS runtime
+ENV PYTHONUNBUFFERED=1 \
+    PYTHONDONTWRITEBYTECODE=1 \
+    PATH="/opt/venv/bin:/root/.opencode/bin:$PATH" \
+    BHAJANLAL_BACKEND_HOST=0.0.0.0 \
+    BHAJANLAL_BACKEND_PORT=8790
+RUN apt-get update && apt-get install -y --no-install-recommends curl ca-certificates && rm -rf /var/lib/apt/lists/*
+RUN python -m venv /opt/venv
+ENV PATH="/opt/venv/bin:$PATH"
+COPY requirements-api.txt .
+RUN pip install --no-cache-dir -r requirements-api.txt
+# Install opencode CLI (Linux x64)
+RUN curl -fsSL https://github.com/anomalyco/opencode/releases/latest/download/opencode-linux-x64.tar.gz -o /tmp/opencode.tar.gz && \
+    mkdir -p /root/.opencode/bin && \
+    tar -xzf /tmp/opencode.tar.gz -C /root/.opencode/bin && \
+    rm /tmp/opencode.tar.gz && \
+    chmod +x /root/.opencode/bin/opencode
+RUN useradd --create-home --uid 10001 appuser
+WORKDIR /app
+COPY --from=builder /opt/venv /opt/venv 2>/dev/null || true
+COPY serve/ ./serve/
+# Copy venv from builder
+USER appuser
+ENV HOME=/home/appuser
+ENV PATH="/opt/venv/bin:/home/appuser/.opencode/bin:$PATH"
+RUN mkdir -p /home/appuser/.opencode/bin && cp /root/.opencode/bin/opencode /home/appuser/.opencode/bin/ 2>/dev/null || true
+EXPOSE 8790
+CMD ["python", "serve/backend.py"]

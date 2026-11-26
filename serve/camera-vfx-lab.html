@@ -9,15 +9,22 @@
   body{background:#0b0d12;color:#e6e9ef;font-family:ui-monospace,monospace;overflow:hidden}
   #wrap{position:relative;width:100vw;height:100vh}
   canvas{display:block;width:100%;height:100%}
-  #hud{position:absolute;top:10px;left:10px;font-size:12px;line-height:1.6;background:rgba(0,0,0,.5);padding:8px 12px;border-radius:6px;pointer-events:none}
-  #hud b{color:#7dd3fc}
-  #ctrl{position:absolute;bottom:10px;left:10px;font-size:11px;opacity:.7;pointer-events:none}
+  #hud{position:absolute;top:10px;left:10px;font-size:12px;line-height:1.6;
+    background:rgba(0,0,0,.82);color:#f8fafc;padding:8px 12px;border-radius:6px;
+    pointer-events:none;border:1px solid rgba(255,255,255,.25);
+    backdrop-filter:blur(6px) saturate(1.2);-webkit-backdrop-filter:blur(6px) saturate(1.2);
+    text-shadow:0 1px 2px rgba(0,0,0,.9),0 0 1px rgba(0,0,0,.9);
+    box-shadow:0 4px 16px rgba(0,0,0,.5);}
+  #hud b{color:#38bdf8;text-shadow:0 1px 2px rgba(0,0,0,.9)}
+  #ctrl{position:absolute;bottom:10px;left:10px;font-size:11px;opacity:.9;pointer-events:none;
+    color:#f8fafc;text-shadow:0 1px 2px rgba(0,0,0,.9);background:rgba(0,0,0,.55);
+    padding:4px 8px;border-radius:4px;}
 </style>
 </head>
 <body>
 <div id="wrap"><canvas id="c"></canvas></div>
 <div id="hud"></div>
-<div id="ctrl">WASD drive · Space fire · Shift boost · E explode · R reset camera · Mouse look (drag)</div>
+<div id="ctrl">WASD drive · Space fire · Shift boost · E explode · R reset camera · T cycle terrain · Mouse look (drag)</div>
 <script>
 'use strict';
 const canvas=document.getElementById('c');
@@ -48,7 +55,23 @@ for(let i=0;i<60;i++) palms.push({x:Math.random()*world.w,y:Math.random()*world.
 // ---------- car ----------
 const car={x:world.w/2,y:world.h/2,angle:0,speed:0,boost:0};
 const keys={};
-addEventListener('keydown',e=>{keys[e.code]=true;if(e.code==='KeyR')camera.trauma=0;});
+const terrainModes=['default','snow','desert','ocean'];
+let terrainIdx=0;
+let terrain=terrainModes[0];
+try{const saved=localStorage.getItem('bhajanlal-terrain');if(saved && terrainModes.includes(saved)){terrain=saved;terrainIdx=terrainModes.indexOf(saved);}}catch(e){}
+// Terrain palettes: sky, ground, grid, building, palm colors per terrain
+const TERRAIN_PALETTES={
+  default:{skyTop:'#1a1f2e',skyBot:'#0b0d12',ground:'#1c2330',grid:'rgba(255,255,255,0.04)',bldg:[40,50,70],palm:'#2d5a3d',palmStem:'#1a3a25'},
+  snow:{skyTop:'#cfe8ff',skyBot:'#eaf4ff',ground:'#f2f6fb',grid:'rgba(30,60,100,0.08)',bldg:[180,190,210],palm:'#9ca3af',palmStem:'#6b7280'},
+  desert:{skyTop:'#fde68a',skyBot:'#fef3c7',ground:'#d6b370',grid:'rgba(120,80,20,0.10)',bldg:[160,120,70],palm:'#6b8e23',palmStem:'#4a6518'},
+  ocean:{skyTop:'#93c5fd',skyBot:'#bfdbfe',ground:'#1e3a8a',grid:'rgba(255,255,255,0.06)',bldg:[30,60,120],palm:'#0ea5e9',palmStem:'#0369a1'}
+};
+function terrainPalette(){return TERRAIN_PALETTES[terrain]||TERRAIN_PALETTES.default;}
+addEventListener('keydown',e=>{
+  keys[e.code]=true;
+  if(e.code==='KeyR')camera.trauma=0;
+  if(e.code==='KeyT'){terrainIdx=(terrainIdx+1)%terrainModes.length;terrain=terrainModes[terrainIdx];try{localStorage.setItem('bhajanlal-terrain',terrain);}catch(e){}}
+});
 addEventListener('keyup',e=>{keys[e.code]=false;});
 
 // ---------- camera ----------
@@ -196,17 +219,18 @@ function worldToScreen(wx,wy){
 function draw(){
   // sky gradient
   const g=ctx.createLinearGradient(0,0,0,H);
-  g.addColorStop(0,'#1a1f2e'); g.addColorStop(1,'#0b0d12');
+  const pal=terrainPalette();
+  g.addColorStop(0,pal.skyTop); g.addColorStop(1,pal.skyBot);
   ctx.fillStyle=g; ctx.fillRect(0,0,W,H);
 
   // ground
   const s0=worldToScreen(0,0);
   const sc=s0.s;
-  ctx.fillStyle='#1c2330';
+  ctx.fillStyle=pal.ground;
   ctx.fillRect(0,0,W,H);
 
   // grid
-  ctx.strokeStyle='rgba(255,255,255,0.04)'; ctx.lineWidth=1;
+  ctx.strokeStyle=pal.grid; ctx.lineWidth=1;
   const step=100*sc;
   const ox=s0.x % step, oy=s0.y % step;
   for(let x=ox;x<W;x+=step){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,H);ctx.stroke();}
@@ -220,7 +244,8 @@ function draw(){
     ctx.fillStyle='rgba(0,0,0,0.4)'; ctx.fillRect(p.x+4,p.y+4,w,h);
     // body
     const shade=0.4+((b.x+b.y)%50)/200;
-    ctx.fillStyle=`rgba(${Math.floor(40+shade*40)},${Math.floor(50+shade*30)},${Math.floor(70+shade*20)},1)`;
+    const bc=pal.bldg;
+    ctx.fillStyle=`rgba(${Math.floor(bc[0]+shade*40)},${Math.floor(bc[1]+shade*30)},${Math.floor(bc[2]+shade*20)},1)`;
     ctx.fillRect(p.x,p.y,w,h);
     // neon edge
     ctx.strokeStyle='rgba(125,211,252,0.15)'; ctx.lineWidth=1;
@@ -240,9 +265,9 @@ function draw(){
   // palms
   for(const pl of palms){
     const p=worldToScreen(pl.x,pl.y);
-    ctx.fillStyle='#2d5a3d';
+    ctx.fillStyle=pal.palm;
     ctx.beginPath(); ctx.arc(p.x,p.y,6*sc,0,Math.PI*2); ctx.fill();
-    ctx.strokeStyle='#1a3a25'; ctx.lineWidth=2*sc;
+    ctx.strokeStyle=pal.palmStem; ctx.lineWidth=2*sc;
     ctx.beginPath(); ctx.moveTo(p.x,p.y); ctx.lineTo(p.x,p.y+12*sc); ctx.stroke();
   }
 
@@ -289,10 +314,10 @@ function draw(){
 
   // HUD
   const hud=document.getElementById('hud');
-  hud.innerHTML=`<b>Camera & VFX Lab</b><br>`+
+  hud.innerHTML=`<b>Camera & VFX Lab</b> <span style="opacity:.7">· terrain: ${terrain}</span><br>`+
     `speed: ${car.speed.toFixed(1)} · FOV: ${camera.fov.toFixed(1)} · boom: ${camera.boom.toFixed(0)}<br>`+
     `trauma: ${camera.trauma.toFixed(2)} · particles: ${particles.length} · decals: ${decals.length}<br>`+
-    `pos: ${car.x.toFixed(0)},${car.y.toFixed(0)}`;
+    `pos: ${car.x.toFixed(0)},${car.y.toFixed(0)} · press T to cycle terrain`;
 }
 
 function loop(now){

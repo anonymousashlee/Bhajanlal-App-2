@@ -1,0 +1,25 @@
+id: bhajanlal-health-get
+info:
+  name: Bhajanlal /health GET fuzz
+  author: bhajanlal
+  severity: medium
+  description: Auto-generated from OpenAPI spec for GET /health.
+http:
+- method: GET
+  path:
+  - '{{BaseURL}}/health'
+  matchers:
+  - type: status
+    status:
+    - 500
+    - 502
+    - 503
+  - type: word
+    words:
+    - traceback
+    - Traceback
+    - Exception
+    - uid=
+    - 'root:'
+    condition: or
+  matchers-condition: or
